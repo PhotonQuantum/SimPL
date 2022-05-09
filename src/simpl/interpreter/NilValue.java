@@ -9,7 +9,8 @@ class NilValue extends Value {
         return "nil";
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         return o != null && getClass() == o.getClass();
     }
 }

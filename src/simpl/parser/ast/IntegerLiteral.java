@@ -21,11 +21,13 @@ public class IntegerLiteral extends Expr {
         return "" + n;
     }
 
-    @Override public TypeResult typecheck(TypeEnv E) throws TypeError {
+    @Override
+    public TypeResult typecheck(TypeEnv E) throws TypeError {
         return TypeResult.of(Type.INT);
     }
 
-    @Override public Value eval(State s) throws RuntimeError {
+    @Override
+    public Value eval(State s) throws RuntimeError {
         return new IntValue(n);
     }
 }

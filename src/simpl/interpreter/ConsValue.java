@@ -2,8 +2,6 @@ package simpl.interpreter;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
 public class ConsValue extends Value {
 
     // TODO how to limit v2 to be a list?
@@ -27,7 +25,8 @@ public class ConsValue extends Value {
         return 1;
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o)
             return true;
         if (o == null || getClass() != o.getClass())

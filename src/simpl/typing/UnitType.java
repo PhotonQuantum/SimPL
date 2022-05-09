@@ -5,25 +5,28 @@ final class UnitType extends Type {
     UnitType() {
     }
 
-    @Override public boolean isEqualityType() {
+    @Override
+    public boolean isEqualityType() {
         return false;
     }
 
-    @Override public Substitution unify(Type t) throws TypeError {
+    @Override
+    public Substitution unify(Type t) throws TypeError {
         if (t instanceof UnitType) {
             return Substitution.IDENTITY;
-        }
-        else if (t instanceof TypeVar) {
+        } else if (t instanceof TypeVar) {
             return t.unify(this);
         }
         throw new TypeMismatchError();
     }
 
-    @Override public boolean contains(TypeVar tv) {
+    @Override
+    public boolean contains(TypeVar tv) {
         return false;
     }
 
-    @Override public Type replace(TypeVar a, Type t) {
+    @Override
+    public Type replace(TypeVar a, Type t) {
         return Type.UNIT;
     }
 

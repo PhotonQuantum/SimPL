@@ -5,7 +5,8 @@ import simpl.parser.Symbol;
 public abstract class TypeEnv {
 
     public static final TypeEnv empty = new TypeEnv() {
-        @Override public Type get(Symbol x) {
+        @Override
+        public Type get(Symbol x) {
             return null;
         }
     };

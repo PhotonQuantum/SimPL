@@ -17,12 +17,14 @@ public class AndAlso extends BinaryExpr {
         return "(" + l + " andalso " + r + ")";
     }
 
-    @Override public TypeResult typecheck(TypeEnv E) throws TypeError {
+    @Override
+    public TypeResult typecheck(TypeEnv E) throws TypeError {
         // TODO
         return null;
     }
 
-    @Override public Value eval(State s) throws RuntimeError {
+    @Override
+    public Value eval(State s) throws RuntimeError {
         // TODO
         return null;
     }

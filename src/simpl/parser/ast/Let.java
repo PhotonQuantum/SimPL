@@ -23,12 +23,14 @@ public class Let extends Expr {
         return "(let " + x + " = " + e1 + " in " + e2 + ")";
     }
 
-    @Override public TypeResult typecheck(TypeEnv E) throws TypeError {
+    @Override
+    public TypeResult typecheck(TypeEnv E) throws TypeError {
         // TODO
         return null;
     }
 
-    @Override public Value eval(State s) throws RuntimeError {
+    @Override
+    public Value eval(State s) throws RuntimeError {
         // TODO
         return null;
     }

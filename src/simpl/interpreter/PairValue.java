@@ -2,8 +2,6 @@ package simpl.interpreter;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
 public class PairValue extends Value {
 
     @NotNull

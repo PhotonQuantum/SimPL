@@ -13,12 +13,14 @@ public class Nil extends Expr {
         return "nil";
     }
 
-    @Override public TypeResult typecheck(TypeEnv E) throws TypeError {
+    @Override
+    public TypeResult typecheck(TypeEnv E) throws TypeError {
         // TODO
         return null;
     }
 
-    @Override public Value eval(State s) throws RuntimeError {
+    @Override
+    public Value eval(State s) throws RuntimeError {
         // TODO
         return null;
     }

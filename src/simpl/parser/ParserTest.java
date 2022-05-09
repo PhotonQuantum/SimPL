@@ -11,8 +11,7 @@ public class ParserTest {
             java_cup.runtime.Symbol parseTree = parser.parse();
             System.out.println(filename);
             System.out.println(parseTree.value);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("syntax error");
         }
     }

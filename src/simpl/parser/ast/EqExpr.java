@@ -10,7 +10,8 @@ public abstract class EqExpr extends BinaryExpr {
         super(l, r);
     }
 
-    @Override public TypeResult typecheck(TypeEnv E) throws TypeError {
+    @Override
+    public TypeResult typecheck(TypeEnv E) throws TypeError {
         // TODO
         return null;
     }

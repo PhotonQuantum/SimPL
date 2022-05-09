@@ -15,7 +15,8 @@ public class RecValue extends Value {
         this.e = e;
     }
 
-    @Override public boolean equals(Object other) {
+    @Override
+    public boolean equals(Object other) {
         return false;
     }
 }

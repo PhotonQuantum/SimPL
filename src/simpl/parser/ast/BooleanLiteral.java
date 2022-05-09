@@ -21,11 +21,13 @@ public class BooleanLiteral extends Expr {
         return "" + b;
     }
 
-    @Override public TypeResult typecheck(TypeEnv E) throws TypeError {
+    @Override
+    public TypeResult typecheck(TypeEnv E) throws TypeError {
         return TypeResult.of(Type.BOOL);
     }
 
-    @Override public Value eval(State s) throws RuntimeError {
+    @Override
+    public Value eval(State s) throws RuntimeError {
         return new BoolValue(b);
     }
 }

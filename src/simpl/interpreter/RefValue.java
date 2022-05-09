@@ -1,7 +1,5 @@
 package simpl.interpreter;
 
-import java.util.Objects;
-
 public class RefValue extends Value {
 
     public final int p;

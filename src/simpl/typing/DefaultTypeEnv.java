@@ -10,7 +10,8 @@ public class DefaultTypeEnv extends TypeEnv {
         E = empty;
     }
 
-    @Override public Type get(Symbol x) {
+    @Override
+    public Type get(Symbol x) {
         return E.get(x);
     }
 }

@@ -16,18 +16,18 @@ public class TypeVar extends Type {
         name = Symbol.of("tv" + ++tvcnt);
     }
 
-    @Override public boolean isEqualityType() {
+    @Override
+    public boolean isEqualityType() {
         return equalityType;
     }
 
-    @Override public Substitution unify(Type t) throws TypeCircularityError {
+    @Override
+    public Substitution unify(Type t) throws TypeCircularityError {
         if (t instanceof TypeVar rhs && this.equals(rhs)) {
             return Substitution.IDENTITY;
-        }
-        else if (t.contains(this)) {
+        } else if (t.contains(this)) {
             throw new TypeCircularityError();
-        }
-        else {
+        } else {
             return Substitution.of(this, t);
         }
     }
@@ -36,15 +36,18 @@ public class TypeVar extends Type {
         return "" + name;
     }
 
-    @Override public boolean contains(TypeVar tv) {
+    @Override
+    public boolean contains(TypeVar tv) {
         return this.equals(tv);
     }
 
-    @Override public Type replace(TypeVar a, Type t) {
+    @Override
+    public Type replace(TypeVar a, Type t) {
         return this.equals(a) ? t : this;
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o)
             return true;
         if (o == null || getClass() != o.getClass())
@@ -53,7 +56,8 @@ public class TypeVar extends Type {
         return name.equals(typeVar.name);
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return Objects.hash(name);
     }
 }

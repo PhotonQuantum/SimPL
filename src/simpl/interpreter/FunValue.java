@@ -19,7 +19,8 @@ public class FunValue extends Value {
         return "fun";
     }
 
-    @Override public boolean equals(Object other) {
+    @Override
+    public boolean equals(Object other) {
         return false;
     }
 }

@@ -1,7 +1,5 @@
 package simpl.interpreter;
 
-import java.util.Objects;
-
 public class IntValue extends Value {
 
     public final int n;

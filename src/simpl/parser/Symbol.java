@@ -32,12 +32,14 @@ public class Symbol {
         return name;
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         // `Symbol` is interned.
         return this == o;
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return Objects.hash(name);
     }
 }
