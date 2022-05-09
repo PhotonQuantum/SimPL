@@ -1,10 +1,13 @@
 package simpl.parser;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashMap;
+import java.util.Objects;
 
 public class Symbol {
 
-    private static final HashMap<String, Symbol> dict = new HashMap<String, Symbol>();
+    private static final HashMap<String, Symbol> dict = new HashMap<>();
     private final String name;
 
     private Symbol(String n) {
@@ -15,7 +18,7 @@ public class Symbol {
      * Make return the unique symbol associated with a string. Repeated calls to <tt>symbol("abc")</tt> will return the
      * same Symbol.
      */
-    public static Symbol symbol(String n) {
+    public static @NotNull Symbol of(@NotNull String n) {
         String u = n.intern();
         Symbol s = dict.get(u);
         if (s == null) {
@@ -27,5 +30,14 @@ public class Symbol {
 
     public String toString() {
         return name;
+    }
+
+    @Override public boolean equals(Object o) {
+        // `Symbol` is interned.
+        return this == o;
+    }
+
+    @Override public int hashCode() {
+        return Objects.hash(name);
     }
 }

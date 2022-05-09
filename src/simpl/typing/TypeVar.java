@@ -2,6 +2,8 @@ package simpl.typing;
 
 import simpl.parser.Symbol;
 
+import java.util.Objects;
+
 public class TypeVar extends Type {
 
     private static int tvcnt = 0;
@@ -11,7 +13,7 @@ public class TypeVar extends Type {
 
     public TypeVar(boolean equalityType) {
         this.equalityType = equalityType;
-        name = Symbol.symbol("tv" + ++tvcnt);
+        name = Symbol.of("tv" + ++tvcnt);
     }
 
     @Override public boolean isEqualityType() {
@@ -19,8 +21,15 @@ public class TypeVar extends Type {
     }
 
     @Override public Substitution unify(Type t) throws TypeCircularityError {
-        // TODO
-        return null;
+        if (t instanceof TypeVar rhs && this.equals(rhs)) {
+            return Substitution.IDENTITY;
+        }
+        else if (t.contains(this)) {
+            throw new TypeCircularityError();
+        }
+        else {
+            return Substitution.of(this, t);
+        }
     }
 
     public String toString() {
@@ -28,12 +37,23 @@ public class TypeVar extends Type {
     }
 
     @Override public boolean contains(TypeVar tv) {
-        // TODO
-        return false;
+        return this.equals(tv);
     }
 
     @Override public Type replace(TypeVar a, Type t) {
-        // TODO
-        return null;
+        return this.equals(a) ? t : this;
+    }
+
+    @Override public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        TypeVar typeVar = (TypeVar) o;
+        return name.equals(typeVar.name);
+    }
+
+    @Override public int hashCode() {
+        return Objects.hash(name);
     }
 }

@@ -2,7 +2,7 @@ package simpl.typing;
 
 final class UnitType extends Type {
 
-    protected UnitType() {
+    UnitType() {
     }
 
     @Override public boolean isEqualityType() {
@@ -10,11 +10,11 @@ final class UnitType extends Type {
     }
 
     @Override public Substitution unify(Type t) throws TypeError {
-        if (t instanceof TypeVar) {
-            return t.unify(this);
-        }
         if (t instanceof UnitType) {
             return Substitution.IDENTITY;
+        }
+        else if (t instanceof TypeVar) {
+            return t.unify(this);
         }
         throw new TypeMismatchError();
     }

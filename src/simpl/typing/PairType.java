@@ -10,23 +10,25 @@ public final class PairType extends Type {
     }
 
     @Override public boolean isEqualityType() {
-        // TODO
-        return false;
+        return true;
     }
 
     @Override public Substitution unify(Type t) throws TypeError {
-        // TODO
-        return null;
+        if (t instanceof PairType rhs) {
+            return t1.unify(rhs.t1).compose(t2.unify(rhs.t2));
+        }
+        else if (t instanceof TypeVar) {
+            return t.unify(this);
+        }
+        throw new TypeMismatchError();
     }
 
     @Override public boolean contains(TypeVar tv) {
-        // TODO
-        return false;
+        return t1.contains(tv) || t2.contains(tv);
     }
 
     @Override public Type replace(TypeVar a, Type t) {
-        // TODO
-        return null;
+        return new PairType(t1.replace(a, t), t2.replace(a, t));
     }
 
     public String toString() {

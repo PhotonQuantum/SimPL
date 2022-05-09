@@ -4,10 +4,10 @@ import simpl.parser.Symbol;
 
 public class DefaultTypeEnv extends TypeEnv {
 
-    private TypeEnv E;
+    private final TypeEnv E;
 
     public DefaultTypeEnv() {
-        // TODO
+        E = empty;
     }
 
     @Override public Type get(Symbol x) {

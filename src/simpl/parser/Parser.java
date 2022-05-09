@@ -532,7 +532,7 @@ class CUP$Parser$actions {
     }
 
     static Symbol symbol(String s) {
-        return Symbol.symbol(s);
+        return Symbol.of(s);
     }
 
     /**
