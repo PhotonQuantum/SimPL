@@ -1,5 +1,7 @@
 package simpl.interpreter;
 
+import java.util.Objects;
+
 public class IntValue extends Value {
 
     public final int n;
@@ -12,8 +14,11 @@ public class IntValue extends Value {
         return "" + n;
     }
 
-    @Override public boolean equals(Object other) {
-        // TODO
-        return false;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        IntValue intValue = (IntValue) o;
+        return n == intValue.n;
     }
 }

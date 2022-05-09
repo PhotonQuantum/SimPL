@@ -2,9 +2,9 @@ package simpl.interpreter.pcf;
 
 import simpl.interpreter.FunValue;
 
-public class succ extends FunValue {
+public class IsZero extends FunValue {
 
-    public succ() {
+    public IsZero() {
         // TODO
         super(null, null, null);
     }

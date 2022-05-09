@@ -1,10 +1,10 @@
-package simpl.interpreter.pcf;
+package simpl.interpreter.lib;
 
 import simpl.interpreter.FunValue;
 
-public class pred extends FunValue {
+public class Snd extends FunValue {
 
-    public pred() {
+    public Snd() {
         // TODO
         super(null, null, null);
     }

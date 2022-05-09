@@ -2,9 +2,9 @@ package simpl.interpreter.lib;
 
 import simpl.interpreter.FunValue;
 
-public class snd extends FunValue {
+public class Hd extends FunValue {
 
-    public snd() {
+    public Hd() {
         // TODO
         super(null, null, null);
     }

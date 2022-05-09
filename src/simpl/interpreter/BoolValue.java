@@ -12,8 +12,13 @@ public class BoolValue extends Value {
         return "" + b;
     }
 
-    @Override public boolean equals(Object other) {
-        // TODO
-        return false;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        BoolValue boolValue = (BoolValue) o;
+        return b == boolValue.b;
     }
 }
