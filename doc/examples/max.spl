@@ -1,0 +1,1 @@
+(fn p => if (fst p) > (snd p) then fst p else snd p)(1,2)

@@ -1,0 +1,3 @@
+rec even => fn n => if iszero n then true
+		    else if iszero (pred n) then false
+		    else even (pred (pred n))

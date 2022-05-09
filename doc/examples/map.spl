@@ -1,0 +1,6 @@
+(* using polymorphic types *)
+rec map =>
+  fn f => fn l =>
+    if l=nil
+    then nil
+    else (f (hd l))::(map f (tl l))

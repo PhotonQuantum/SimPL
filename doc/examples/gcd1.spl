@@ -1,0 +1,5 @@
+let gcd = rec g => fn a => fn b =>
+            if b=0 then a else g b (a % b)
+in  gcd 34986 3087
+end
+(* ==> 1029 *)

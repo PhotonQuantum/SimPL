@@ -1,0 +1,9 @@
+let
+  sum = rec sum =>
+  		fn a => if a=nil
+                then 0
+                else hd a + sum (tl a)
+in
+  sum (1::2::3::nil)
+end
+(* ==> 6 *)

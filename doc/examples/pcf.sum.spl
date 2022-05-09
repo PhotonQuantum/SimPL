@@ -1,0 +1,1 @@
+rec sum => fn x => fn y => if iszero x then y else sum (pred x) (succ y)
