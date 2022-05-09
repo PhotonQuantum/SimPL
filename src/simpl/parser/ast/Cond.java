@@ -9,7 +9,9 @@ import simpl.typing.TypeResult;
 
 public class Cond extends Expr {
 
-    public Expr e1, e2, e3;
+    public final Expr e1;
+    public final Expr e2;
+    public final Expr e3;
 
     public Cond(Expr e1, Expr e2, Expr e3) {
         this.e1 = e1;

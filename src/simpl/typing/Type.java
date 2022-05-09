@@ -1,10 +1,8 @@
 package simpl.typing;
 
 public abstract class Type {
-
-    public static final Type INT = new IntType();
-    public static final Type BOOL = new BoolType();
-    public static final Type UNIT = new UnitType();
+    // NIL and UNIT are moved to `NilValue.INSTANCE` and `UnitValue.INSTANCE` to avoid vm deadlock.
+    // See https://bugs.openjdk.java.net/browse/JDK-6301579.
 
     public abstract boolean isEqualityType();
 

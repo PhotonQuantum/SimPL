@@ -1,8 +1,10 @@
 package simpl.typing;
 
-final class UnitType extends Type {
+public final class UnitType extends Type {
+    public static final UnitType INSTANCE = new UnitType();
 
-    UnitType() {
+    private UnitType() {
+        super();
     }
 
     @Override
@@ -27,7 +29,7 @@ final class UnitType extends Type {
 
     @Override
     public Type replace(TypeVar a, Type t) {
-        return Type.UNIT;
+        return this;
     }
 
     public String toString() {

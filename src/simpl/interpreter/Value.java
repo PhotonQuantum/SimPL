@@ -1,9 +1,12 @@
 package simpl.interpreter;
 
 public abstract class Value {
+    // NIL and UNIT are moved to `NilValue.INSTANCE` and `UnitValue.INSTANCE` to avoid vm deadlock.
+    // See https://bugs.openjdk.java.net/browse/JDK-6301579.
 
-    public static final Value NIL = new NilValue();
-    public static final Value UNIT = new UnitValue();
+    protected Value() {
+        super();
+    }
 
     public abstract boolean equals(Object other);
 }

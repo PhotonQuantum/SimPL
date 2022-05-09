@@ -10,8 +10,9 @@ import simpl.typing.TypeResult;
 
 public class Let extends Expr {
 
-    public Symbol x;
-    public Expr e1, e2;
+    public final Symbol x;
+    public final Expr e1;
+    public final Expr e2;
 
     public Let(Symbol x, Expr e1, Expr e2) {
         this.x = x;

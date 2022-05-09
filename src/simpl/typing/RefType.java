@@ -2,7 +2,7 @@ package simpl.typing;
 
 public final class RefType extends Type {
 
-    public Type t;
+    public final Type t;
 
     public RefType(Type t) {
         this.t = t;

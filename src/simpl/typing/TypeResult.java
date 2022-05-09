@@ -2,8 +2,8 @@ package simpl.typing;
 
 public class TypeResult {
 
-    public Substitution s;
-    public Type t;
+    public final Substitution s;
+    public final Type t;
 
     private TypeResult(Substitution s, Type t) {
         this.s = s;

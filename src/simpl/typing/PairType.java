@@ -2,7 +2,8 @@ package simpl.typing;
 
 public final class PairType extends Type {
 
-    public Type t1, t2;
+    public final Type t1;
+    public final Type t2;
 
     public PairType(Type t1, Type t2) {
         this.t1 = t1;

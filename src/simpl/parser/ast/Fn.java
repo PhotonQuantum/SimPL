@@ -10,8 +10,8 @@ import simpl.typing.TypeResult;
 
 public class Fn extends Expr {
 
-    public Symbol x;
-    public Expr e;
+    public final Symbol x;
+    public final Expr e;
 
     public Fn(Symbol x, Expr e) {
         this.x = x;

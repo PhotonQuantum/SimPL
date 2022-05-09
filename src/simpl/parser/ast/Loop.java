@@ -9,7 +9,8 @@ import simpl.typing.TypeResult;
 
 public class Loop extends Expr {
 
-    public Expr e1, e2;
+    public final Expr e1;
+    public final Expr e2;
 
     public Loop(Expr e1, Expr e2) {
         this.e1 = e1;

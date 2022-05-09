@@ -4,14 +4,11 @@ import simpl.interpreter.BoolValue;
 import simpl.interpreter.RuntimeError;
 import simpl.interpreter.State;
 import simpl.interpreter.Value;
-import simpl.typing.Type;
-import simpl.typing.TypeEnv;
-import simpl.typing.TypeError;
-import simpl.typing.TypeResult;
+import simpl.typing.*;
 
 public class BooleanLiteral extends Expr {
 
-    public boolean b;
+    public final boolean b;
 
     public BooleanLiteral(boolean b) {
         this.b = b;
@@ -23,7 +20,7 @@ public class BooleanLiteral extends Expr {
 
     @Override
     public TypeResult typecheck(TypeEnv E) throws TypeError {
-        return TypeResult.of(Type.BOOL);
+        return TypeResult.of(BoolType.INSTANCE);
     }
 
     @Override

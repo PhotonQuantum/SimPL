@@ -10,7 +10,7 @@ import simpl.typing.TypeResult;
 
 public class Name extends Expr {
 
-    public Symbol x;
+    public final Symbol x;
 
     public Name(Symbol x) {
         this.x = x;

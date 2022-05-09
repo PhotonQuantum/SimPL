@@ -1,8 +1,10 @@
 package simpl.typing;
 
-final class IntType extends Type {
+public final class IntType extends Type {
+    public static final IntType INSTANCE = new IntType();
 
-    IntType() {
+    private IntType() {
+        super();
     }
 
     @Override

@@ -2,7 +2,7 @@ package simpl.typing;
 
 public final class ListType extends Type {
 
-    public Type t;
+    public final Type t;
 
     public ListType(Type t) {
         this.t = t;

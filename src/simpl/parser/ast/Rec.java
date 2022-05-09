@@ -10,8 +10,8 @@ import simpl.typing.TypeResult;
 
 public class Rec extends Expr {
 
-    public Symbol x;
-    public Expr e;
+    public final Symbol x;
+    public final Expr e;
 
     public Rec(Symbol x, Expr e) {
         this.x = x;
