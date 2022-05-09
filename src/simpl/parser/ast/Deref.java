@@ -1,5 +1,6 @@
 package simpl.parser.ast;
 
+import simpl.interpreter.RefValue;
 import simpl.interpreter.RuntimeError;
 import simpl.interpreter.State;
 import simpl.interpreter.Value;
@@ -18,14 +19,17 @@ public class Deref extends UnaryExpr {
     }
 
     @Override
-    public TypeResult typecheck(TypeEnv E) throws TypeError {
+    public TypeResult typeCheck(TypeEnv E) throws TypeError {
         // TODO
         return null;
     }
 
     @Override
     public Value eval(State s) throws RuntimeError {
-        // TODO
-        return null;
+        // E-Deref
+        if (e.eval(s) instanceof RefValue ref) {
+            return s.M.get(ref.p);
+        }
+        throw new RuntimeError(e + " is not a reference");
     }
 }

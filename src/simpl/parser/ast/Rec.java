@@ -1,5 +1,6 @@
 package simpl.parser.ast;
 
+import simpl.interpreter.RecValue;
 import simpl.interpreter.RuntimeError;
 import simpl.interpreter.State;
 import simpl.interpreter.Value;
@@ -23,14 +24,15 @@ public class Rec extends Expr {
     }
 
     @Override
-    public TypeResult typecheck(TypeEnv E) throws TypeError {
+    public TypeResult typeCheck(TypeEnv E) throws TypeError {
         // TODO
         return null;
     }
 
     @Override
     public Value eval(State s) throws RuntimeError {
-        // TODO
-        return null;
+        // E-Rec
+        var recVal = new RecValue(s.E, x, e);
+        return e.eval(State.of(s.E.extend(x, recVal), s.M, s.p));
     }
 }

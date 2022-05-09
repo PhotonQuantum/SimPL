@@ -1,8 +1,6 @@
 package simpl.parser.ast;
 
-import simpl.interpreter.RuntimeError;
-import simpl.interpreter.State;
-import simpl.interpreter.Value;
+import simpl.interpreter.*;
 
 public class Less extends RelExpr {
 
@@ -16,7 +14,12 @@ public class Less extends RelExpr {
 
     @Override
     public Value eval(State s) throws RuntimeError {
-        // TODO
-        return null;
+        if (l.eval(s) instanceof IntValue lhs) {
+            if (r.eval(s) instanceof IntValue rhs) {
+                return new BoolValue(lhs.n < rhs.n);
+            }
+            throw new RuntimeError(r + " is not an integer");
+        }
+        throw new RuntimeError(l + " is not an integer");
     }
 }

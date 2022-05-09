@@ -1,8 +1,6 @@
 package simpl.parser.ast;
 
-import simpl.interpreter.RuntimeError;
-import simpl.interpreter.State;
-import simpl.interpreter.Value;
+import simpl.interpreter.*;
 import simpl.typing.TypeEnv;
 import simpl.typing.TypeError;
 import simpl.typing.TypeResult;
@@ -18,14 +16,18 @@ public class Assign extends BinaryExpr {
     }
 
     @Override
-    public TypeResult typecheck(TypeEnv E) throws TypeError {
+    public TypeResult typeCheck(TypeEnv E) throws TypeError {
         // TODO
         return null;
     }
 
     @Override
     public Value eval(State s) throws RuntimeError {
-        // TODO
-        return null;
+        // E-Assign
+        if (l.eval(s) instanceof RefValue lhs) {
+            s.M.put(lhs.p, r.eval(s));
+            return UnitValue.INSTANCE;
+        }
+        throw new RuntimeError(l + " is not a reference");
     }
 }

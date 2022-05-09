@@ -4,7 +4,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class ConsValue extends Value {
 
-    // TODO how to limit v2 to be a list?
     @NotNull
     public final Value v1, v2;
 

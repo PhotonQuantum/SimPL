@@ -1,5 +1,6 @@
 package simpl.parser.ast;
 
+import simpl.interpreter.IntValue;
 import simpl.interpreter.RuntimeError;
 import simpl.interpreter.State;
 import simpl.interpreter.Value;
@@ -18,14 +19,17 @@ public class Neg extends UnaryExpr {
     }
 
     @Override
-    public TypeResult typecheck(TypeEnv E) throws TypeError {
+    public TypeResult typeCheck(TypeEnv E) throws TypeError {
         // TODO
         return null;
     }
 
     @Override
     public Value eval(State s) throws RuntimeError {
-        // TODO
-        return null;
+        // E-Neg
+        if (e.eval(s) instanceof IntValue intValue) {
+            return new IntValue(-intValue.n);
+        }
+        throw new RuntimeError(e + " is not an integer");
     }
 }

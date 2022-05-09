@@ -12,13 +12,13 @@ import simpl.parser.Symbol;
 public class InitialState extends State {
 
     public static final Env initialEnv =
-            Env.of(Env.empty, Symbol.of("fst"), new Fst())
-                    .append(Symbol.of("snd"), new Snd())
-                    .append(Symbol.of("hd"), new Hd())
-                    .append(Symbol.of("tl"), new Tl())
-                    .append(Symbol.of("iszero"), new IsZero())
-                    .append(Symbol.of("pred"), new Pred())
-                    .append(Symbol.of("succ"), new Succ());
+            Env.of(Env.EMPTY, Symbol.of("fst"), Fst.INSTANCE)
+                    .extend(Symbol.of("snd"), Snd.INSTANCE)
+                    .extend(Symbol.of("hd"), Hd.INSTANCE)
+                    .extend(Symbol.of("tl"), Tl.INSTANCE)
+                    .extend(Symbol.of("iszero"), IsZero.INSTANCE)
+                    .extend(Symbol.of("pred"), Pred.INSTANCE)
+                    .extend(Symbol.of("succ"), Succ.INSTANCE);
 
     public InitialState() {
         super(initialEnv, new Mem(), new Int(0));

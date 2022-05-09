@@ -39,14 +39,17 @@ public class Interpreter {
             Parser parser = new Parser(inp);
             java_cup.runtime.Symbol parseTree = parser.parse();
             Expr program = (Expr) parseTree.value;
-            System.out.println(program.typecheck(new DefaultTypeEnv()).t);
+            System.out.println(program.typeCheck(new DefaultTypeEnv()).t);
             System.out.println(program.eval(new InitialState()));
         } catch (SyntaxError e) {
             System.out.println("syntax error");
+            System.err.println(e.getMessage());
         } catch (TypeError e) {
             System.out.println("type error");
+            System.err.println(e.getMessage());
         } catch (RuntimeError e) {
             System.out.println("runtime error");
+            System.err.println(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }

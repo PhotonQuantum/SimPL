@@ -6,7 +6,7 @@ import simpl.parser.Symbol;
 
 public class Env {
 
-    public static final Env empty = new Env() {
+    public static final Env EMPTY = new Env() {
         public Value get(@NotNull Symbol y) {
             return null;
         }
@@ -36,7 +36,7 @@ public class Env {
         return new Env(E, x, v);
     }
 
-    public @NotNull Env append(Symbol x, Value v) {
+    public @NotNull Env extend(Symbol x, Value v) {
         return of(this, x, v);
     }
 

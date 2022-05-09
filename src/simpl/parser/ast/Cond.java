@@ -1,5 +1,6 @@
 package simpl.parser.ast;
 
+import simpl.interpreter.BoolValue;
 import simpl.interpreter.RuntimeError;
 import simpl.interpreter.State;
 import simpl.interpreter.Value;
@@ -24,14 +25,17 @@ public class Cond extends Expr {
     }
 
     @Override
-    public TypeResult typecheck(TypeEnv E) throws TypeError {
+    public TypeResult typeCheck(TypeEnv E) throws TypeError {
         // TODO
         return null;
     }
 
     @Override
     public Value eval(State s) throws RuntimeError {
-        // TODO
-        return null;
+        // E-Cond1 & E-Cond2
+        if (e1.eval(s) instanceof BoolValue predicate) {
+            return predicate.b ? e2.eval(s) : e3.eval(s);
+        }
+        throw new RuntimeError(e1 + " is not a boolean");
     }
 }

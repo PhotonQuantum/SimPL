@@ -1,5 +1,6 @@
 package simpl.parser.ast;
 
+import simpl.interpreter.NilValue;
 import simpl.interpreter.RuntimeError;
 import simpl.interpreter.State;
 import simpl.interpreter.Value;
@@ -14,14 +15,14 @@ public class Nil extends Expr {
     }
 
     @Override
-    public TypeResult typecheck(TypeEnv E) throws TypeError {
+    public TypeResult typeCheck(TypeEnv E) throws TypeError {
         // TODO
         return null;
     }
 
     @Override
     public Value eval(State s) throws RuntimeError {
-        // TODO
-        return null;
+        // E-Nil
+        return NilValue.INSTANCE;
     }
 }

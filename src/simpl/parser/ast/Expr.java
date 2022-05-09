@@ -9,14 +9,14 @@ import simpl.typing.TypeResult;
 
 public abstract class Expr {
 
-    public abstract TypeResult typecheck(TypeEnv E) throws TypeError;
+    public abstract TypeResult typeCheck(TypeEnv E) throws TypeError;
 
     /**
-     * relies on side effect
+     * Evaluate this expression in the given state.
      *
-     * @param s
-     * @return
-     * @throws RuntimeError
+     * @param s The state to evaluate in.
+     * @return The value of this expression.
+     * @throws RuntimeError If this expression cannot be evaluated.
      */
     public abstract Value eval(State s) throws RuntimeError;
 }

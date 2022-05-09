@@ -18,8 +18,8 @@ public class Group extends UnaryExpr {
     }
 
     @Override
-    public TypeResult typecheck(TypeEnv E) throws TypeError {
-        return e.typecheck(E);
+    public TypeResult typeCheck(TypeEnv E) throws TypeError {
+        return e.typeCheck(E);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package simpl.parser.ast;
 
+import simpl.interpreter.RefValue;
 import simpl.interpreter.RuntimeError;
 import simpl.interpreter.State;
 import simpl.interpreter.Value;
@@ -18,14 +19,22 @@ public class Ref extends UnaryExpr {
     }
 
     @Override
-    public TypeResult typecheck(TypeEnv E) throws TypeError {
+    public TypeResult typeCheck(TypeEnv E) throws TypeError {
         // TODO
         return null;
     }
 
     @Override
     public Value eval(State s) throws RuntimeError {
-        // TODO
-        return null;
+        // E-Ref
+        var value = e.eval(s);
+
+        // Get free pointer.
+        var ptr = s.p.get();
+        s.p.set(ptr + 1);   // Update next pointer index.
+
+        // Store value in free cell.
+        s.M.put(ptr, value);
+        return new RefValue(ptr);
     }
 }

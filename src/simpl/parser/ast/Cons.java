@@ -1,5 +1,6 @@
 package simpl.parser.ast;
 
+import simpl.interpreter.ConsValue;
 import simpl.interpreter.RuntimeError;
 import simpl.interpreter.State;
 import simpl.interpreter.Value;
@@ -18,14 +19,14 @@ public class Cons extends BinaryExpr {
     }
 
     @Override
-    public TypeResult typecheck(TypeEnv E) throws TypeError {
+    public TypeResult typeCheck(TypeEnv E) throws TypeError {
         // TODO
         return null;
     }
 
     @Override
     public Value eval(State s) throws RuntimeError {
-        // TODO
-        return null;
+        // E-Cons
+        return new ConsValue(l.eval(s), r.eval(s));
     }
 }

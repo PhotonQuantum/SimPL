@@ -1,5 +1,6 @@
 package simpl.parser.ast;
 
+import simpl.interpreter.BoolValue;
 import simpl.interpreter.RuntimeError;
 import simpl.interpreter.State;
 import simpl.interpreter.Value;
@@ -16,7 +17,7 @@ public class Neq extends EqExpr {
 
     @Override
     public Value eval(State s) throws RuntimeError {
-        // TODO
-        return null;
+        // E-Neq.
+        return new BoolValue(!l.eval(s).equals(r.eval(s)));
     }
 }

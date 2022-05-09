@@ -1,5 +1,7 @@
 package simpl.parser.ast;
 
+import org.jetbrains.annotations.NotNull;
+import simpl.interpreter.Env;
 import simpl.interpreter.RuntimeError;
 import simpl.interpreter.State;
 import simpl.interpreter.Value;
@@ -25,14 +27,18 @@ public class Let extends Expr {
     }
 
     @Override
-    public TypeResult typecheck(TypeEnv E) throws TypeError {
+    public TypeResult typeCheck(TypeEnv E) throws TypeError {
         // TODO
         return null;
     }
 
     @Override
-    public Value eval(State s) throws RuntimeError {
-        // TODO
-        return null;
+    public Value eval(@NotNull State s) throws RuntimeError {
+        // E-Let
+        // Call by value
+        var v1 = e1.eval(s);
+        var E = Env.of(s.E, x, v1);
+        return e2.eval(State.of(E, s.M, s.p));
+        // TODO Call by name
     }
 }

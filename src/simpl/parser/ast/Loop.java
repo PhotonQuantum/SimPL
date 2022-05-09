@@ -1,8 +1,6 @@
 package simpl.parser.ast;
 
-import simpl.interpreter.RuntimeError;
-import simpl.interpreter.State;
-import simpl.interpreter.Value;
+import simpl.interpreter.*;
 import simpl.typing.TypeEnv;
 import simpl.typing.TypeError;
 import simpl.typing.TypeResult;
@@ -22,14 +20,16 @@ public class Loop extends Expr {
     }
 
     @Override
-    public TypeResult typecheck(TypeEnv E) throws TypeError {
+    public TypeResult typeCheck(TypeEnv E) throws TypeError {
         // TODO
         return null;
     }
 
     @Override
     public Value eval(State s) throws RuntimeError {
-        // TODO
-        return null;
+        if (e1.eval(s) instanceof BoolValue predicate) {
+            return (predicate.b) ? new Seq(e2, this).eval(s) : UnitValue.INSTANCE;
+        }
+        throw new RuntimeError(e1 + " is not a boolean");
     }
 }

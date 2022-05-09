@@ -1,5 +1,7 @@
 package simpl.parser.ast;
 
+import org.jetbrains.annotations.NotNull;
+import simpl.interpreter.RecValue;
 import simpl.interpreter.RuntimeError;
 import simpl.interpreter.State;
 import simpl.interpreter.Value;
@@ -21,14 +23,26 @@ public class Name extends Expr {
     }
 
     @Override
-    public TypeResult typecheck(TypeEnv E) throws TypeError {
+    public TypeResult typeCheck(TypeEnv E) throws TypeError {
         // TODO
         return null;
     }
 
     @Override
-    public Value eval(State s) throws RuntimeError {
-        // TODO
-        return null;
+    public Value eval(@NotNull State s) throws RuntimeError {
+        @SuppressWarnings("SuspiciousNameCombination")
+        var v = s.E.get(x);
+        if (v == null) {
+            throw new RuntimeError("Undefined variable: " + x);
+        }
+
+        if (v instanceof RecValue recValue) {
+            // E-Name1
+            var recExpr = new Rec(x, recValue.e);
+            return recExpr.eval(State.of(recValue.E, s.M, s.p));
+        }
+
+        // E-Name2
+        return v;
     }
 }

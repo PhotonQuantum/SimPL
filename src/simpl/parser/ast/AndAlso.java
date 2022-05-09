@@ -1,5 +1,6 @@
 package simpl.parser.ast;
 
+import simpl.interpreter.BoolValue;
 import simpl.interpreter.RuntimeError;
 import simpl.interpreter.State;
 import simpl.interpreter.Value;
@@ -18,14 +19,25 @@ public class AndAlso extends BinaryExpr {
     }
 
     @Override
-    public TypeResult typecheck(TypeEnv E) throws TypeError {
+    public TypeResult typeCheck(TypeEnv E) throws TypeError {
         // TODO
         return null;
     }
 
     @Override
     public Value eval(State s) throws RuntimeError {
-        // TODO
-        return null;
+        if (l.eval(s) instanceof BoolValue lhs) {
+            if (!lhs.b) {
+                // E-AndAlso2
+                return new BoolValue(false);
+            }
+
+            // E-AndAlso1
+            if (r.eval(s) instanceof BoolValue rhs) {
+                return new BoolValue(rhs.b);
+            }
+            throw new RuntimeError(r + " is not a boolean");
+        }
+        throw new RuntimeError(l + " is not a boolean");
     }
 }

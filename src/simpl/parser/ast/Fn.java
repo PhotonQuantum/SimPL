@@ -1,5 +1,7 @@
 package simpl.parser.ast;
 
+import org.jetbrains.annotations.NotNull;
+import simpl.interpreter.FunValue;
 import simpl.interpreter.RuntimeError;
 import simpl.interpreter.State;
 import simpl.interpreter.Value;
@@ -23,14 +25,13 @@ public class Fn extends Expr {
     }
 
     @Override
-    public TypeResult typecheck(TypeEnv E) throws TypeError {
+    public TypeResult typeCheck(TypeEnv E) throws TypeError {
         // TODO
         return null;
     }
 
     @Override
-    public Value eval(State s) throws RuntimeError {
-        // TODO
-        return null;
+    public Value eval(@NotNull State s) throws RuntimeError {
+        return new FunValue(s.E, x, e);
     }
 }
