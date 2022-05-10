@@ -1,0 +1,28 @@
+plugins {
+    id 'java'
+    id "org.xbib.gradle.plugin.jflex" version "1.6.0"
+    id "cup.gradle.cup-gradle-plugin" version "2.0"
+}
+
+group 'me.lightquantum'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'de.jflex:cup_runtime:11b-20160615'
+    implementation 'org.jetbrains:annotations:23.0.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+cup {
+    args = ["-parser", "Parser", "-symbols", "Symbols", "-interface"]
+}
