@@ -13,7 +13,7 @@ public final class ListType extends Type {
 
     @Override
     public boolean isEqualityType() {
-        return true;
+        return t.isEqualityType();
     }
 
     @Override
