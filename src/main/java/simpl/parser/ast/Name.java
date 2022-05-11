@@ -22,9 +22,12 @@ public class Name extends Expr {
     }
 
     @Override
-    public TypeResult typeCheck(TypeEnv E) {
-        // TODO need instantiate for let-polymorphism
-        return null;
+    public TypeResult typeCheck(@NotNull TypeEnv E) {
+        /* τ = inst(Γ(x)) */
+        var t = E.get(x).instantiate();
+
+        /* W(Γ; x) = (̇⋅, τ) */
+        return TypeResult.of(t);
     }
 
     @Override
