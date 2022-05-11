@@ -21,13 +21,15 @@ public abstract class Substitution {
 
     public TypeEnv applyOn(final TypeEnv E) {
         return new TypeEnv() {
-            public Type get(Symbol x) {
-                return applyOn(E.get(x));
+            public TypeScheme get(Symbol x) {
+                // SAFETY: we never keep universal quantifiers around when unifying.
+                return applyOn((Type) E.get(x));
             }
         };
     }
 
     private static final class Identity extends Substitution {
+        @Override
         public Type applyOn(Type t) {
             return t;
         }
@@ -42,6 +44,7 @@ public abstract class Substitution {
             this.t = t;
         }
 
+        @Override
         public Type applyOn(@NotNull Type b) {
             return b.replace(a, t);
         }

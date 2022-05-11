@@ -12,7 +12,7 @@ public class DefaultTypeEnv extends TypeEnv {
     }
 
     @Override
-    public Type get(Symbol x) {
+    public TypeScheme get(Symbol x) {
         return E.get(x);
     }
 }

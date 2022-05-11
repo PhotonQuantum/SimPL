@@ -2,7 +2,6 @@ package simpl.typing;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import simpl.parser.Symbol;
 
 public abstract class TypeEnv {
@@ -10,7 +9,7 @@ public abstract class TypeEnv {
     public static final TypeEnv EMPTY = new TypeEnv() {
         @Contract(pure = true)
         @Override
-        public @Nullable Type get(Symbol x) {
+        public TypeScheme get(Symbol x) {
             return null;
         }
     };
@@ -18,7 +17,7 @@ public abstract class TypeEnv {
     @Contract(value = "_, _, _ -> new", pure = true)
     public static @NotNull TypeEnv of(final TypeEnv E, final Symbol x, final Type t) {
         return new TypeEnv() {
-            public Type get(Symbol x1) {
+            public TypeScheme get(Symbol x1) {
                 if (x == x1)
                     return t;
                 return E.get(x1);
@@ -30,5 +29,5 @@ public abstract class TypeEnv {
         };
     }
 
-    public abstract Type get(Symbol x);
+    public abstract TypeScheme get(Symbol x);
 }
