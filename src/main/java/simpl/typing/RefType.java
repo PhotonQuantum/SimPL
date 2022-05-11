@@ -7,8 +7,13 @@ public final class RefType extends Type {
 
     public final Type t;
 
-    public RefType(Type t) {
+    private RefType(Type t) {
         this.t = t;
+    }
+
+    @Contract("_ -> new")
+    public static @NotNull RefType of(Type t) {
+        return new RefType(t);
     }
 
     @Override
@@ -34,7 +39,7 @@ public final class RefType extends Type {
     @Contract("_, _ -> new")
     @Override
     public @NotNull Type replace(TypeVar a, Type t) {
-        return new RefType(this.t.replace(a, t));
+        return RefType.of(this.t.replace(a, t));
     }
 
     @Contract(pure = true)

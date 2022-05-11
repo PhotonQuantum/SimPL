@@ -8,9 +8,14 @@ public final class ArrowType extends Type {
     public final Type t1;
     public final Type t2;
 
-    public ArrowType(Type t1, Type t2) {
+    private ArrowType(Type t1, Type t2) {
         this.t1 = t1;
         this.t2 = t2;
+    }
+
+    @Contract("_, _ -> new")
+    public static @NotNull ArrowType of(Type t1, Type t2) {
+        return new ArrowType(t1, t2);
     }
 
     @Override
@@ -36,7 +41,7 @@ public final class ArrowType extends Type {
     @Contract("_, _ -> new")
     @Override
     public @NotNull Type replace(TypeVar a, Type t) {
-        return new ArrowType(t1.replace(a, t), t2.replace(a, t));
+        return ArrowType.of(t1.replace(a, t), t2.replace(a, t));
     }
 
     @Contract(pure = true)

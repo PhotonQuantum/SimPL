@@ -53,7 +53,6 @@ public class Env {
 
     public Env copy() {
         assert E != null;
-        // TODO Value must be immutable, or must be deep-copied
         return Env.of(E.copy(), /* interned */ x, /* immutable */ v);
     }
 }

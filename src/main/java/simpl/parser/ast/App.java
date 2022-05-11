@@ -1,9 +1,7 @@
 package simpl.parser.ast;
 
 import simpl.interpreter.*;
-import simpl.typing.TypeEnv;
-import simpl.typing.TypeError;
-import simpl.typing.TypeResult;
+import simpl.typing.*;
 
 public class App extends BinaryExpr {
 
@@ -17,8 +15,22 @@ public class App extends BinaryExpr {
 
     @Override
     public TypeResult typeCheck(TypeEnv E) throws TypeError {
-        // TODO
-        return null;
+        /*
+            W(Γ; l) ⊢ (S1; τ1)
+            W(S1∘Γ; r) ⊢ (S2; τ2)
+         */
+        var W1 = l.typeCheck(E);
+        var W2 = r.typeCheck(W1.subst().applyOn(E));
+
+        /* S2 τ1 ~ (τ2 → α) ~> S3 */
+        var a = new TypeVar(true);
+        var S3 = W2.subst().applyOn(W1.ty()).unify(ArrowType.of(W2.ty(), a));
+
+        /* S = S3∘S2∘S1 */
+        var S = S3.compose(W2.subst()).compose(W1.subst());
+
+        /* W(Γ; r l) = (S; S3 α) */
+        return TypeResult.of(S, S3.applyOn(a));
     }
 
     @Override

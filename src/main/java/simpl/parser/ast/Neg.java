@@ -4,6 +4,7 @@ import simpl.interpreter.IntValue;
 import simpl.interpreter.RuntimeError;
 import simpl.interpreter.State;
 import simpl.interpreter.Value;
+import simpl.typing.IntType;
 import simpl.typing.TypeEnv;
 import simpl.typing.TypeError;
 import simpl.typing.TypeResult;
@@ -20,8 +21,14 @@ public class Neg extends UnaryExpr {
 
     @Override
     public TypeResult typeCheck(TypeEnv E) throws TypeError {
-        // TODO
-        return null;
+        /* W(Γ; e) ⊢ (S; τ) */
+        var W = e.typeCheck(E);
+
+        /* τ ~ int ~> S' */
+        var S_ = W.ty().unify(IntType.INSTANCE);
+
+        /* W(Γ; ~e) = (S'∘S; int) */
+        return TypeResult.of(S_.compose(W.subst()), IntType.INSTANCE);
     }
 
     @Override

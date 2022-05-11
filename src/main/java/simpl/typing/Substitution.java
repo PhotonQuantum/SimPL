@@ -13,22 +13,22 @@ public abstract class Substitution {
         return new Replace(a, t);
     }
 
-    public abstract Type apply(Type t);
+    public abstract Type applyOn(Type t);
 
     public Substitution compose(Substitution inner) {
         return new Compose(this, inner);
     }
 
-    public TypeEnv compose(final TypeEnv E) {
+    public TypeEnv applyOn(final TypeEnv E) {
         return new TypeEnv() {
             public Type get(Symbol x) {
-                return apply(E.get(x));
+                return applyOn(E.get(x));
             }
         };
     }
 
     private static final class Identity extends Substitution {
-        public Type apply(Type t) {
+        public Type applyOn(Type t) {
             return t;
         }
     }
@@ -42,7 +42,7 @@ public abstract class Substitution {
             this.t = t;
         }
 
-        public Type apply(@NotNull Type b) {
+        public Type applyOn(@NotNull Type b) {
             return b.replace(a, t);
         }
     }
@@ -56,8 +56,8 @@ public abstract class Substitution {
             this.g = g;
         }
 
-        public Type apply(Type t) {
-            return f.apply(g.apply(t));
+        public Type applyOn(Type t) {
+            return f.applyOn(g.applyOn(t));
         }
     }
 }

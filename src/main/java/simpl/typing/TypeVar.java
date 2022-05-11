@@ -12,12 +12,15 @@ public class TypeVar extends Type {
     private final Symbol name;
 
     public TypeVar(boolean equalityType) {
+        // TODO What'subst the purpose of recording the equality property here?
+        // All usage are defined as equalityType=true temporarily.
         this.equalityType = equalityType;
         name = Symbol.of("tv" + ++tvcnt);
     }
 
     @Override
     public boolean isEqualityType() {
+        // TODO check where this is used
         return equalityType;
     }
 

@@ -2,13 +2,15 @@ package simpl.typing;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import simpl.parser.Symbol;
 
 public abstract class TypeEnv {
 
-    public static final TypeEnv empty = new TypeEnv() {
+    public static final TypeEnv EMPTY = new TypeEnv() {
+        @Contract(pure = true)
         @Override
-        public Type get(Symbol x) {
+        public @Nullable Type get(Symbol x) {
             return null;
         }
     };

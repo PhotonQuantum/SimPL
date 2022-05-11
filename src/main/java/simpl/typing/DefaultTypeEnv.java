@@ -7,7 +7,8 @@ public class DefaultTypeEnv extends TypeEnv {
     private final TypeEnv E;
 
     public DefaultTypeEnv() {
-        E = empty;
+        // TODO need to type builtin functions (require let-poly)
+        E = EMPTY;
     }
 
     @Override

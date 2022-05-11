@@ -7,7 +7,6 @@ import simpl.interpreter.State;
 import simpl.interpreter.Value;
 import simpl.parser.Symbol;
 import simpl.typing.TypeEnv;
-import simpl.typing.TypeError;
 import simpl.typing.TypeResult;
 
 public class Name extends Expr {
@@ -23,8 +22,8 @@ public class Name extends Expr {
     }
 
     @Override
-    public TypeResult typeCheck(TypeEnv E) throws TypeError {
-        // TODO
+    public TypeResult typeCheck(TypeEnv E) {
+        // TODO need inst(antiate) for let-polymorphism
         return null;
     }
 

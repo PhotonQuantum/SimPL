@@ -4,9 +4,7 @@ import simpl.interpreter.RefValue;
 import simpl.interpreter.RuntimeError;
 import simpl.interpreter.State;
 import simpl.interpreter.Value;
-import simpl.typing.TypeEnv;
-import simpl.typing.TypeError;
-import simpl.typing.TypeResult;
+import simpl.typing.*;
 
 public class Deref extends UnaryExpr {
 
@@ -20,8 +18,15 @@ public class Deref extends UnaryExpr {
 
     @Override
     public TypeResult typeCheck(TypeEnv E) throws TypeError {
-        // TODO
-        return null;
+        /* W(Γ; e) ⊢ (S; τ) */
+        var W = e.typeCheck(E);
+
+        /* τ ~ ref α ~> S' */
+        var a = new TypeVar(true);
+        var S_ = W.ty().unify(RefType.of(a));
+
+        /* W(Γ; !e) = (S'∘S; S' α) */
+        return TypeResult.of(S_.compose(W.subst()), S_.applyOn(a));
     }
 
     @Override

@@ -7,8 +7,13 @@ public final class ListType extends Type {
 
     public final Type t;
 
-    public ListType(Type t) {
+    private ListType(Type t) {
         this.t = t;
+    }
+
+    @Contract("_ -> new")
+    public static @NotNull ListType of(Type t) {
+        return new ListType(t);
     }
 
     @Override
@@ -34,7 +39,7 @@ public final class ListType extends Type {
     @Contract("_, _ -> new")
     @Override
     public @NotNull Type replace(TypeVar a, Type t) {
-        return new ListType(this.t.replace(a, t));
+        return ListType.of(this.t.replace(a, t));
     }
 
     @Contract(pure = true)

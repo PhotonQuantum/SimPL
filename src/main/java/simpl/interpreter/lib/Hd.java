@@ -4,7 +4,6 @@ import simpl.interpreter.*;
 import simpl.parser.Symbol;
 import simpl.parser.ast.Expr;
 import simpl.typing.TypeEnv;
-import simpl.typing.TypeError;
 import simpl.typing.TypeResult;
 
 public class Hd extends FunValue {
@@ -13,7 +12,7 @@ public class Hd extends FunValue {
     private Hd() {
         super(Env.EMPTY, Symbol.of("x"), new Expr() {
             @Override
-            public TypeResult typeCheck(TypeEnv E) throws TypeError {
+            public TypeResult typeCheck(TypeEnv E) {
                 // TODO
                 return null;
             }
