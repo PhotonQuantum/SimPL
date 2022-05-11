@@ -1,33 +1,50 @@
 package simpl.typing;
 
+import kala.collection.immutable.ImmutableCompactSet;
+import kala.collection.immutable.ImmutableSet;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import simpl.parser.Symbol;
 
-public abstract class TypeEnv {
+public class TypeEnv {
+    private final TypeEnv E;
+    protected final Symbol x;
+    protected final TypeScheme t;
 
-    public static final TypeEnv EMPTY = new TypeEnv() {
-        @Contract(pure = true)
-        @Override
-        public TypeScheme get(Symbol x) {
-            return null;
-        }
-    };
+    public static final TypeEnv EMPTY = new TypeEnv();
 
-    @Contract(value = "_, _, _ -> new", pure = true)
-    public static @NotNull TypeEnv of(final TypeEnv E, final Symbol x, final Type t) {
-        return new TypeEnv() {
-            public TypeScheme get(Symbol x1) {
-                if (x == x1)
-                    return t;
-                return E.get(x1);
-            }
-
-            public String toString() {
-                return x + ":" + t + ";" + E;
-            }
-        };
+    private TypeEnv(TypeEnv e, Symbol x, TypeScheme t) {
+        E = e;
+        this.x = x;
+        this.t = t;
     }
 
-    public abstract TypeScheme get(Symbol x);
+    protected TypeEnv() {
+        E = null;
+        this.x = null;
+        this.t = null;
+    }
+
+    @Contract(value = "_, _, _ -> new", pure = true)
+    public static @NotNull TypeEnv of(final TypeEnv E, final Symbol x, final TypeScheme t) {
+        return new TypeEnv(E, x, t);
+    }
+
+    public TypeScheme get(Symbol x) {
+        if (x == this.x)
+            return t;
+        if (E == null)
+            return null;
+        return E.get(x);
+    }
+
+    public String toString() {
+        return x + ":" + t + ";" + E;
+    }
+
+    public ImmutableSet<Symbol> typeVariables() {
+        if (E == null)
+            return ImmutableCompactSet.empty();
+        return E.typeVariables().added(x);
+    }
 }

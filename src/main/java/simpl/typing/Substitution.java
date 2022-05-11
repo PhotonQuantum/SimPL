@@ -20,10 +20,14 @@ public abstract class Substitution {
     }
 
     public TypeEnv applyOn(final TypeEnv E) {
+        // We keep this method override instead of cons list because it doesn't touch free vars, and it's faster than subst the whole list.
         return new TypeEnv() {
             public TypeScheme get(Symbol x) {
                 // SAFETY: we never keep universal quantifiers around when unifying.
                 return applyOn((Type) E.get(x));
+            }
+            public String toString() {
+                return x + ":" + get(x) + ";" + E;
             }
         };
     }
