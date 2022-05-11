@@ -29,8 +29,9 @@ public class Interpreter {
         interpret("doc/examples/pcf.minus.spl");
         interpret("doc/examples/pcf.factorial.spl");
         interpret("doc/examples/pcf.fibonacci.spl");
-        // interpret("doc/examples/pcf.twice.spl");
-        // interpret("doc/examples/pcf.lists.spl");
+        interpret("doc/examples/pcf.twice.spl");
+        interpret("doc/examples/pcf.lists.spl");
+        interpret("doc/examples/letpoly.spl");
     }
 
     public void run(String filename) {
