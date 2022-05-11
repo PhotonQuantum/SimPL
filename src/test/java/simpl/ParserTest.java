@@ -1,7 +1,8 @@
-package simpl.parser;
+package simpl;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import simpl.parser.Parser;
 
 import java.io.FileReader;
 
