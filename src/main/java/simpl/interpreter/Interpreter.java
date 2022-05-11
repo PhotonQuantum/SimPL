@@ -3,7 +3,7 @@ package simpl.interpreter;
 import simpl.parser.Parser;
 import simpl.parser.SyntaxError;
 import simpl.parser.ast.Expr;
-import simpl.typing.DefaultTypeEnv;
+import simpl.typing.TypeEnv;
 import simpl.typing.TypeError;
 
 import java.io.FileReader;
@@ -38,7 +38,7 @@ public class Interpreter {
             Parser parser = new Parser(inp);
             var parseTree = parser.parse();
             Expr program = (Expr) parseTree.value;
-            System.out.println(program.typeCheck(new DefaultTypeEnv()).ty());
+            System.out.println(program.typeCheck(TypeEnv.DEFAULT).ty());
             System.out.println(program.eval(new InitialState()));
         } catch (SyntaxError e) {
             System.out.println("syntax error");
