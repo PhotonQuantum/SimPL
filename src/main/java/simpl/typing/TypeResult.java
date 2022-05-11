@@ -13,4 +13,10 @@ public record TypeResult(Substitution subst, Type ty) {
     public static @NotNull TypeResult of(Substitution s, Type t) {
         return new TypeResult(s, t);
     }
+
+    @Contract(pure = true)
+    @Override
+    public @NotNull String toString() {
+        return "(" + subst + "; " + ty + ')';
+    }
 }
