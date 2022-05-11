@@ -13,7 +13,7 @@ public abstract class Substitution {
         return new Replace(a, t);
     }
 
-    public abstract Type applyOn(Type t);
+    public abstract <T extends TypeScheme> T applyOn(T t);
 
     public Substitution compose(Substitution inner) {
         return new Compose(this, inner);
@@ -24,8 +24,7 @@ public abstract class Substitution {
         // subst the whole list.
         return new TypeEnv() {
             public TypeScheme get(Symbol x) {
-                // SAFETY: we never keep universal quantifiers around when unifying.
-                return applyOn((Type) E.get(x));
+                return applyOn(E.get(x));
             }
 
             public String toString() {
@@ -36,7 +35,7 @@ public abstract class Substitution {
 
     private static final class Identity extends Substitution {
         @Override
-        public Type applyOn(Type t) {
+        public <T extends TypeScheme> T applyOn(T t) {
             return t;
         }
 
@@ -56,9 +55,11 @@ public abstract class Substitution {
             this.t = t;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public Type applyOn(@NotNull Type b) {
-            return b.replace(a, t);
+        public <T extends TypeScheme> T applyOn(@NotNull T b) {
+            // SAFETY: all replace implementations are covariant
+            return (T) b.replace(a, t);
         }
 
         @Contract(pure = true)
@@ -77,7 +78,8 @@ public abstract class Substitution {
             this.g = g;
         }
 
-        public Type applyOn(Type t) {
+        @Override
+        public <T extends TypeScheme> T applyOn(T t) {
             return f.applyOn(g.applyOn(t));
         }
 

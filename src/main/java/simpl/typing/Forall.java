@@ -14,7 +14,7 @@ public final class Forall extends TypeScheme {
 
     @Contract("_, _ -> new")
     @Override
-    public @NotNull TypeScheme replace(TypeVar a, Type t) {
+    public @NotNull Forall replace(TypeVar a, Type t) {
         return new Forall(a, s.replace(a, t));
     }
 
