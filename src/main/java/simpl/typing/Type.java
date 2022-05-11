@@ -1,6 +1,8 @@
 package simpl.typing;
 
+import kala.collection.immutable.ImmutableCompactSet;
 import kala.collection.immutable.ImmutableSet;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class Type extends TypeScheme {
     // NIL and UNIT are moved to `NilValue.INSTANCE` and `UnitValue.INSTANCE` to avoid vm deadlock.
@@ -16,4 +18,20 @@ public abstract class Type extends TypeScheme {
     public abstract Type replace(TypeVar a, Type t);
 
     public abstract ImmutableSet<TypeVar> freeTypeVars();
+
+    public TypeScheme generalizeWith(@NotNull TypeEnv E) {
+        var tFreeVars = freeTypeVars();
+        var eBoundVars = E.typeVars();
+
+        // TODO filter instead of filterNot?
+        var genVars =
+                tFreeVars.view().filterNot(v -> eBoundVars.contains(v.name)).collect(ImmutableCompactSet.factory());
+
+        return genVars.foldLeft((TypeScheme) this, (acc, a) -> new Forall(a, acc));
+    }
+
+    @Override
+    public Type instantiate() {
+        return this;
+    }
 }

@@ -12,7 +12,7 @@ public class TypeVar extends Type implements Comparable<TypeVar> {
     private static int tvcnt = 0;
 
     private final boolean equalityType;
-    private final Symbol name;
+    public final Symbol name;
 
     public TypeVar(boolean equalityType) {
         // TODO What'subst the purpose of recording the equality property here?

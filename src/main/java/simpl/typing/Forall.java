@@ -17,4 +17,9 @@ public final class Forall extends TypeScheme {
     public @NotNull TypeScheme replace(TypeVar a, Type t) {
         return new Forall(a, s.replace(a, t));
     }
+
+    @Override
+    public Type instantiate() {
+        return s.replace(a, new TypeVar(true)).instantiate();
+    }
 }
