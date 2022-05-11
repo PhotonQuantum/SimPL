@@ -19,12 +19,18 @@ public final class BoolType extends Type {
 
     @Override
     public Substitution unify(Type t) throws TypeError {
-        if (t instanceof BoolType) {
-            return Substitution.IDENTITY;
-        } else if (t instanceof TypeVar) {
-            return t.unify(this);
+        try {
+            if (t instanceof BoolType) {
+                return Substitution.IDENTITY;
+            } else if (t instanceof TypeVar) {
+                return t.unify(this);
+            }
+        } catch (TypeError e) {
+            e.appendTrace(this, t);
+            throw e;
         }
-        throw new TypeMismatchError();
+
+        throw new TypeMismatchError(this, t);
     }
 
     @Override

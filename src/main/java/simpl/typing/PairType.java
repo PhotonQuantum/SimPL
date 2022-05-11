@@ -26,12 +26,18 @@ public final class PairType extends Type {
 
     @Override
     public Substitution unify(Type t) throws TypeError {
-        if (t instanceof PairType rhs) {
-            return t1.unify(rhs.t1).compose(t2.unify(rhs.t2));
-        } else if (t instanceof TypeVar) {
-            return t.unify(this);
+        try {
+            if (t instanceof PairType rhs) {
+                return t1.unify(rhs.t1).compose(t2.unify(rhs.t2));
+            } else if (t instanceof TypeVar) {
+                return t.unify(this);
+            }
+        } catch (TypeError e) {
+            e.appendTrace(this, t);
+            throw e;
         }
-        throw new TypeMismatchError();
+
+        throw new TypeMismatchError(this, t);
     }
 
     @Override

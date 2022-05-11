@@ -46,6 +46,7 @@ public class Interpreter {
         } catch (TypeError e) {
             System.out.println("type error");
             System.err.println(e.getMessage());
+            System.err.println("Trace:" + e.getCheckTrace());
         } catch (RuntimeError e) {
             System.out.println("runtime error");
             System.err.println(e.getMessage());

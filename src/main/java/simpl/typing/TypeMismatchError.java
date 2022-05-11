@@ -7,7 +7,7 @@ public class TypeMismatchError extends TypeError {
     @Serial
     private static final long serialVersionUID = -9010997809568642250L;
 
-    public TypeMismatchError() {
-        super("Mismatch");
+    public TypeMismatchError(Type lhs, Type rhs) {
+        super("Mismatch: Unable to unify " + lhs + " with " + rhs);
     }
 }

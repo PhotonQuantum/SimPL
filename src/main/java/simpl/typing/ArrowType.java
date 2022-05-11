@@ -26,20 +26,26 @@ public final class ArrowType extends Type {
 
     @Override
     public Substitution unify(Type t) throws TypeError {
-        if (t instanceof ArrowType rhs) {
+        try {
+            if (t instanceof ArrowType rhs) {
             /*
                 τ11 ~ τ21 ~> S1
                 S1 τ12 ~ S1 τ22 ~> S2
             */
-            var S1 = t1.unify(rhs.t1);
-            var S2 = S1.applyOn(t2).unify(S1.applyOn(rhs.t2));
+                var S1 = t1.unify(rhs.t1);
+                var S2 = S1.applyOn(t2).unify(S1.applyOn(rhs.t2));
 
-            /* (τ11 → τ12) ~ (τ21 → τ22) ~> S2∘S1 */
-            return S2.compose(S1);
-        } else if (t instanceof TypeVar) {
-            return t.unify(this);
+                /* (τ11 → τ12) ~ (τ21 → τ22) ~> S2∘S1 */
+                return S2.compose(S1);
+            } else if (t instanceof TypeVar) {
+                return t.unify(this);
+            }
+        } catch (TypeError e) {
+            e.appendTrace(this, t);
+            throw e;
         }
-        throw new TypeMismatchError();
+
+        throw new TypeMismatchError(this, t);
     }
 
     @Override
