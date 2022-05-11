@@ -22,4 +22,10 @@ public final class Forall extends TypeScheme {
     public Type instantiate() {
         return s.replace(a, new TypeVar(true)).instantiate();
     }
+
+    @Contract(pure = true)
+    @Override
+    public @NotNull String toString() {
+        return "∀" + a + ". " + s;
+    }
 }
