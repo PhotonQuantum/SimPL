@@ -33,6 +33,9 @@ public abstract class Substitution {
         };
     }
 
+    @Override
+    public abstract String toString();
+
     private static final class Identity extends Substitution {
         @Override
         public <T extends TypeScheme> T applyOn(T t) {
@@ -89,7 +92,4 @@ public abstract class Substitution {
             return f + "∘" + g;
         }
     }
-
-    @Override
-    public abstract String toString();
 }

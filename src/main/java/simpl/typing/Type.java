@@ -23,7 +23,6 @@ public abstract class Type extends TypeScheme {
         var tFreeVars = freeTypeVars();
         var eBoundVars = E.typeVars();
 
-        // TODO filter instead of filterNot?
         var genVars =
                 tFreeVars.view().filterNot(v -> eBoundVars.contains(v.name)).collect(ImmutableCompactSet.factory());
 

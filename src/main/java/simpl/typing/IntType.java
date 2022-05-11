@@ -19,7 +19,7 @@ public final class IntType extends Type {
 
     @Override
     public Substitution unify(Type t) throws TypeError {
-        try{
+        try {
             if (t instanceof IntType) {
                 return Substitution.IDENTITY;
             } else if (t instanceof TypeVar) {

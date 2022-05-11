@@ -13,7 +13,7 @@ public class Fst extends FunValue {
         super(Env.EMPTY, Symbol.of("x"), new Expr() {
             @Override
             public TypeResult typeCheck(TypeEnv E) {
-                // TODO
+                // No need to tyck because its type is hard-coded at TypeEnv.DEFAULT.
                 return null;
             }
 

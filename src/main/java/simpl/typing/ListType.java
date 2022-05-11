@@ -24,7 +24,7 @@ public final class ListType extends Type {
 
     @Override
     public Substitution unify(Type t) throws TypeError {
-        try{
+        try {
             if (t instanceof ListType rhs) {
                 return this.t.unify(rhs.t);
             } else if (t instanceof TypeVar) {

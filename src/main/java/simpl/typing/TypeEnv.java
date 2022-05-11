@@ -10,9 +10,9 @@ import simpl.parser.Symbol;
 
 public class TypeEnv {
     public static final TypeEnv DEFAULT = withBuiltIns();
-    private final TypeEnv E;
     protected final Symbol x;
     protected final TypeScheme t;
+    private final TypeEnv E;
 
     private TypeEnv(TypeEnv e, Symbol x, TypeScheme t) {
         E = e;
