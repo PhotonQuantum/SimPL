@@ -1,5 +1,6 @@
 package simpl.typing;
 
+import kala.collection.immutable.ImmutableSet;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,6 +43,11 @@ public final class PairType extends Type {
     @Override
     public @NotNull Type replace(TypeVar a, Type t) {
         return PairType.of(t1.replace(a, t), t2.replace(a, t));
+    }
+
+    @Override
+    public @NotNull ImmutableSet<TypeVar> freeTypeVars() {
+        return t1.freeTypeVars().addedAll(t2.freeTypeVars());
     }
 
     @Contract(pure = true)

@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class Symbol {
+public class Symbol implements Comparable<Symbol> {
 
     private static final HashMap<String, Symbol> dict = new HashMap<>();
     private final String name;
@@ -41,5 +41,10 @@ public class Symbol {
     @Override
     public int hashCode() {
         return Objects.hash(name);
+    }
+
+    @Override
+    public int compareTo(@NotNull Symbol o) {
+        return name.compareTo(o.name);
     }
 }

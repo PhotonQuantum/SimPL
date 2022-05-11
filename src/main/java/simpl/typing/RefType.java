@@ -1,5 +1,6 @@
 package simpl.typing;
 
+import kala.collection.immutable.ImmutableSet;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,6 +41,11 @@ public final class RefType extends Type {
     @Override
     public @NotNull Type replace(TypeVar a, Type t) {
         return RefType.of(this.t.replace(a, t));
+    }
+
+    @Override
+    public ImmutableSet<TypeVar> freeTypeVars() {
+        return t.freeTypeVars();
     }
 
     @Contract(pure = true)

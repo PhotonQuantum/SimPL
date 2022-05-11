@@ -1,5 +1,7 @@
 package simpl.typing;
 
+import kala.collection.immutable.ImmutableCompactSet;
+import kala.collection.immutable.ImmutableSet;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,6 +35,11 @@ public final class BoolType extends Type {
     @Override
     public Type replace(TypeVar a, Type t) {
         return this;
+    }
+
+    @Override
+    public @NotNull ImmutableSet<TypeVar> freeTypeVars() {
+        return ImmutableCompactSet.empty();
     }
 
     @Contract(pure = true)

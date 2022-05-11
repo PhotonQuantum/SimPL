@@ -23,7 +23,7 @@ public class Name extends Expr {
 
     @Override
     public TypeResult typeCheck(TypeEnv E) {
-        // TODO need inst(antiate) for let-polymorphism
+        // TODO need instantiate for let-polymorphism
         return null;
     }
 

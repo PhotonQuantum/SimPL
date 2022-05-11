@@ -7,11 +7,10 @@ import org.jetbrains.annotations.NotNull;
 import simpl.parser.Symbol;
 
 public class TypeEnv {
+    public static final TypeEnv EMPTY = new TypeEnv();
     private final TypeEnv E;
     protected final Symbol x;
     protected final TypeScheme t;
-
-    public static final TypeEnv EMPTY = new TypeEnv();
 
     private TypeEnv(TypeEnv e, Symbol x, TypeScheme t) {
         E = e;
@@ -42,9 +41,9 @@ public class TypeEnv {
         return x + ":" + t + ";" + E;
     }
 
-    public ImmutableSet<Symbol> typeVariables() {
+    public ImmutableSet<Symbol> typeVars() {
         if (E == null)
             return ImmutableCompactSet.empty();
-        return E.typeVariables().added(x);
+        return E.typeVars().added(x);
     }
 }

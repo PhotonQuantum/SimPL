@@ -1,10 +1,13 @@
 package simpl.typing;
 
+import kala.collection.immutable.ImmutableCompactSet;
+import kala.collection.immutable.ImmutableSet;
+import org.jetbrains.annotations.NotNull;
 import simpl.parser.Symbol;
 
 import java.util.Objects;
 
-public class TypeVar extends Type {
+public class TypeVar extends Type implements Comparable<TypeVar> {
 
     private static int tvcnt = 0;
 
@@ -50,6 +53,11 @@ public class TypeVar extends Type {
     }
 
     @Override
+    public ImmutableSet<TypeVar> freeTypeVars() {
+        return ImmutableCompactSet.of(this);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o)
             return true;
@@ -62,5 +70,10 @@ public class TypeVar extends Type {
     @Override
     public int hashCode() {
         return Objects.hash(name);
+    }
+
+    @Override
+    public int compareTo(@NotNull TypeVar o) {
+        return name.compareTo(o.name);
     }
 }
