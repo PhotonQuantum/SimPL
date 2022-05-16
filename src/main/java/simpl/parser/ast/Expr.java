@@ -1,5 +1,6 @@
 package simpl.parser.ast;
 
+import kala.collection.immutable.ImmutableMap;
 import simpl.interpreter.RuntimeError;
 import simpl.interpreter.State;
 import simpl.interpreter.Value;
@@ -7,7 +8,7 @@ import simpl.typing.TypeEnv;
 import simpl.typing.TypeError;
 import simpl.typing.TypeResult;
 
-public abstract class Expr {
+public abstract class Expr implements EntryPoint {
 
     public abstract TypeResult typeCheck(TypeEnv E) throws TypeError;
 
@@ -19,4 +20,14 @@ public abstract class Expr {
      * @throws RuntimeError If this expression cannot be evaluated.
      */
     public abstract Value eval(State s) throws RuntimeError;
+
+    @Override
+    public ImmutableMap<String, String> pragmas() {
+        return ImmutableMap.empty();
+    }
+
+    @Override
+    public Expr expr() {
+        return this;
+    }
 }

@@ -2,9 +2,7 @@ package simpl;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import simpl.interpreter.InitialState;
-import simpl.parser.Parser;
-import simpl.parser.ast.Expr;
+import simpl.interpreter.Interpreter;
 
 import java.io.FileReader;
 
@@ -30,11 +28,8 @@ public class EvaluationTest {
             "doc/examples/letpoly.spl:0",
     }, delimiter = ':')
     void mustEval(String filename, String expected) throws Exception {
-        var f = new FileReader(filename);
-        var parser = new Parser(f);
-        var parseTree = parser.parse();
-        Expr program = (Expr) parseTree.value;
-        var result = program.eval(new InitialState());
+        var program = Interpreter.of(new FileReader(filename));
+        var result = program.eval();
         assertEquals(expected, result.toString());
     }
 }

@@ -31,7 +31,9 @@ terminal COMMA, SEMI, LPAREN, RPAREN;
 terminal APP;
 terminal Integer NUM;
 terminal String ID;
+terminal String STRING;
 
+non terminal EntryPoint p;
 non terminal Expr e;
 
 precedence right NUM, ID, TRUE, FALSE, NIL, FN, REC, ARROW, IF, ELSE, WHILE, DO, UNIT;
@@ -46,7 +48,12 @@ precedence left MUL, DIV, MOD;
 precedence left APP, LPAREN;
 precedence right NEG, NOT, DEREF, REF;
 
-start with e;
+start with p;
+
+p ::= STRING:x p:e {: RESULT = new Pragma(x, null, e); :}
+    | STRING:x EQ STRING:v p:e {: RESULT = new Pragma(x, v, e); :}
+    | e:e {: RESULT = e; :}
+    ;
 
 e ::= NUM:n {: RESULT = new IntegerLiteral(n.intValue()); :}
     | ID:x  {: RESULT = new Name(symbol(x)); :}

@@ -4,9 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import simpl.parser.Parser;
-import simpl.parser.ast.Expr;
-import simpl.typing.TypeEnv;
+import simpl.interpreter.Interpreter;
 import simpl.typing.TypeError;
 
 import java.io.FileReader;
@@ -16,11 +14,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TyckTest {
     String typeCheck(String filename) throws Exception {
-        var f = new FileReader(filename);
-        var parser = new Parser(f);
-        var parseTree = parser.parse();
-        Expr program = (Expr) parseTree.value;
-        var result = program.typeCheck(TypeEnv.DEFAULT).ty();
+        var program = Interpreter.of(new FileReader(filename));
+        var result = program.typeCheck();
         return result.toString();
     }
 

@@ -27,6 +27,9 @@ import java_cup.runtime.Symbol;
     if (yystate() == YYCOMMENT) {
         throw new SyntaxError("Comment mismatch, need *) at EOF", yyline, yycolumn);
     }
+    if (yystate() == YYPRAGMA) {
+        throw new SyntaxError("Pragma mismatch, need #-} at EOF", yyline, yycolumn);
+    }
     return token(EOF, null);
 %eofval}
 
@@ -34,14 +37,18 @@ LineTerm = \n|\r|\r\n
 Identifier = [_a-z][_a-zA-Z0-9']*
 DecInteger = [0-9]+
 Whitespace = {LineTerm}|[ \t\f]
+Alphanumeric = [a-zA-Z0-9]+
 
 %state YYCOMMENT
+%state YYPRAGMA
 
 %%
 
 <YYINITIAL> {
     "(*" { commentCount = 1; yybegin(YYCOMMENT); }
     "*)" { throw new SyntaxError("Comment mismatch, extra *) found", yyline, yycolumn); }
+    "{-#" { yybegin(YYPRAGMA); }
+    "#-}" { throw new SyntaxError("Pragma mismatch, extra #-} found", yyline, yycolumn); }
     
     "nil"     { return token(NIL); }
     "ref"     { return token(REF); }
@@ -98,4 +105,15 @@ Whitespace = {LineTerm}|[ \t\f]
     "(*" { commentCount++; }
     "*)" { commentCount--; if (commentCount == 0) yybegin(YYINITIAL); }
     [^]  {}
+}
+
+<YYPRAGMA> {
+    "{-#" { throw new SyntaxError("Nested pragma is not allowed", yyline, yycolumn); }
+    "#-}" { yybegin(YYINITIAL); }
+    "="   { return token(EQ); }
+
+    {Alphanumeric} { return token(STRING, yytext()); }
+    {Whitespace}   { /* skip */ }
+
+    [^] { throw new SyntaxError("Illegal character " + yytext(), yyline, yycolumn); }
 }

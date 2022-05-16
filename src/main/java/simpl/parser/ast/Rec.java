@@ -42,6 +42,6 @@ public class Rec extends Expr {
     public Value eval(State s) throws RuntimeError {
         // E-Rec
         var recVal = new RecValue(s.E, x, e);
-        return e.eval(State.of(s.E.extend(x, recVal), s.M, s.p));
+        return e.eval(State.of(s.E.extend(x, recVal), s.M, s.p, s.config));
     }
 }
