@@ -9,6 +9,9 @@ import org.jetbrains.annotations.NotNull;
 import simpl.parser.Symbol;
 
 public class TypeEnv {
+    /**
+     * Default type environment with type definitions for builtin functions.
+     */
     public static final TypeEnv DEFAULT = withBuiltIns();
     protected final Symbol x;
     protected final TypeScheme t;

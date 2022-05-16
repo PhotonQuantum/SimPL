@@ -23,11 +23,11 @@ public class Fn extends Expr {
 
     @Override
     public TypeResult typeCheck(TypeEnv E) throws TypeError {
-        /* W(Γ; x:α; e) ⊢ (S; τ) */
+        /* W(Γ, x:α; e) = (S; τ) */
         var a = new TypeVar(true);
         var W = e.typeCheck(TypeEnv.of(E, x, a));
 
-        /* W(Γ; (λ x e)) = (S; (S α) → τ) */
+        /* W(Γ; (λx.e)) = (S; (S α) → τ) */
         return TypeResult.of(W.subst(), ArrowType.of(W.subst().applyOn(a), W.ty()));
     }
 

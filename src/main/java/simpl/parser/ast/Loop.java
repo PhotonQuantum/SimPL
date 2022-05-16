@@ -20,8 +20,8 @@ public class Loop extends Expr {
     @Override
     public TypeResult typeCheck(TypeEnv E) throws TypeError {
         /*
-            W(Γ; e1) ⊢ (S1; τ1)
-            W(S1∘Γ; e2) ⊢ (S2; τ2)
+            W(Γ; e1) = (S1; τ1)
+            W(S1∘Γ; e2) = (S2; τ2)
          */
         var W1 = e1.typeCheck(E);
         var W2 = e2.typeCheck(W1.subst().applyOn(E));

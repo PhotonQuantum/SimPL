@@ -1,10 +1,7 @@
 package simpl.parser.ast;
 
 import org.jetbrains.annotations.NotNull;
-import simpl.interpreter.Env;
-import simpl.interpreter.RuntimeError;
-import simpl.interpreter.State;
-import simpl.interpreter.Value;
+import simpl.interpreter.*;
 import simpl.parser.Symbol;
 import simpl.typing.TypeEnv;
 import simpl.typing.TypeError;
@@ -28,13 +25,13 @@ public class Let extends Expr {
 
     @Override
     public TypeResult typeCheck(TypeEnv E) throws TypeError {
-        /* W(Γ; e1) ⊢ (S1; τ1) */
+        /* W(Γ; e1) = (S1; τ1) */
         var W1 = e1.typeCheck(E);
 
         /* σ = gen(τ1, S1 Γ) */
         var s = W1.ty().generalizeWith(W1.subst().applyOn(E));
 
-        /* W(S1 Γ, x:σ; e2) ⊢ (S2; τ2) */
+        /* W(S1 Γ, x:σ; e2) = (S2; τ2) */
         var W2 = e2.typeCheck(TypeEnv.of(W1.subst().applyOn(E), x, s));
 
         /* W(Γ; let x = e1 in e2) = (S2∘S1; τ2) */
@@ -44,10 +41,11 @@ public class Let extends Expr {
     @Override
     public Value eval(@NotNull State s) throws RuntimeError {
         // E-Let
-        // Call by value
-        var v1 = e1.eval(s);
+        // TODO Call by value
+        // var v1 = e1.eval(s);
+        // Call by name
+        var v1 = ThunkValue.delay(s.E, e1);
         var E = Env.of(s.E, x, v1);
-        return e2.eval(State.of(E, s.M, s.p));
-        // TODO Call by name
+        return e2.eval(State.of(E, s.M, s.p, s.config));
     }
 }

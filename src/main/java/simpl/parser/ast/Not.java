@@ -21,7 +21,7 @@ public class Not extends UnaryExpr {
 
     @Override
     public TypeResult typeCheck(TypeEnv E) throws TypeError {
-        /* W(Γ; e) ⊢ (S; τ) */
+        /* W(Γ; e) = (S; τ) */
         var W = e.typeCheck(E);
 
         /* τ ~ bool ~> S' */

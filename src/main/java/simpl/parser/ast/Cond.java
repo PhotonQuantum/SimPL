@@ -28,9 +28,9 @@ public class Cond extends Expr {
     @Override
     public TypeResult typeCheck(TypeEnv E) throws TypeError {
         /*
-            W(Γ; e1) ⊢ (S1; τ1)
-            W(S1 Γ; e2) ⊢ (S2; τ2)
-            W(S2∘S1 Γ; e3) ⊢ (S3; τ3)
+            W(Γ; e1) = (S1; τ1)
+            W(S1 Γ; e2) = (S2; τ2)
+            W(S2∘S1 Γ; e3) = (S3; τ3)
         */
         var W1 = e1.typeCheck(E);
         var W2 = e2.typeCheck(W1.subst().applyOn(E));

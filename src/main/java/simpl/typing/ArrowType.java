@@ -28,10 +28,10 @@ public final class ArrowType extends Type {
     public Substitution unify(Type t) throws TypeError {
         try {
             if (t instanceof ArrowType rhs) {
-            /*
-                τ11 ~ τ21 ~> S1
-                S1 τ12 ~ S1 τ22 ~> S2
-            */
+                /*
+                    τ11 ~ τ21 ~> S1
+                    S1 τ12 ~ S1 τ22 ~> S2
+                */
                 var S1 = t1.unify(rhs.t1);
                 var S2 = S1.applyOn(t2).unify(S1.applyOn(rhs.t2));
 

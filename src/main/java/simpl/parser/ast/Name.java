@@ -26,7 +26,7 @@ public class Name extends Expr {
         /* τ = inst(Γ(x)) */
         var t = E.get(x).instantiate();
 
-        /* W(Γ; x) = (̇⋅, τ) */
+        /* W(Γ; x) = (̇⋅; τ) */
         return TypeResult.of(t);
     }
 

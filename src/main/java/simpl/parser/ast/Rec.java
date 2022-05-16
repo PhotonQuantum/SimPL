@@ -26,7 +26,7 @@ public class Rec extends Expr {
 
     @Override
     public TypeResult typeCheck(TypeEnv E) throws TypeError {
-        /* W(Γ, x:α; e) ⊢ (S; τ) */
+        /* W(Γ, x:α; e) = (S; τ) */
         var a = new TypeVar(true);
         var W = e.typeCheck(TypeEnv.of(E, x, a));
 

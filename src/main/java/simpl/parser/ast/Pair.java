@@ -22,8 +22,8 @@ public class Pair extends BinaryExpr {
     @Override
     public TypeResult typeCheck(TypeEnv E) throws TypeError {
         /*
-            W(Γ; l) ⊢ (S1; τ1)
-            W(S1∘Γ; r) ⊢ (S2; τ2)
+            W(Γ; l) = (S1; τ1)
+            W(S1∘Γ; r) = (S2; τ2)
          */
         var W1 = l.typeCheck(E);
         var W2 = r.typeCheck(W1.subst().applyOn(E));
