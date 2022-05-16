@@ -29,6 +29,7 @@ terminal CONS, UNIT, ARROW;
 terminal ASSIGN, DEREF;
 terminal COMMA, SEMI, LPAREN, RPAREN;
 terminal APP;
+terminal STRICT;
 terminal Integer NUM;
 terminal String ID;
 terminal String STRING;
@@ -83,8 +84,10 @@ e ::= NUM:n {: RESULT = new IntegerLiteral(n.intValue()); :}
     | e:l CONS e:r {: RESULT = new Cons(l, r); :}
     | e:l ASSIGN e:r {: RESULT = new Assign(l, r); :}
     | e:l SEMI e:r {: RESULT = new Seq(l, r); :}
-    | e:l e:r {: RESULT = new App(l, r); :} %prec APP
-    | LET ID:x EQ e:e1 IN e:e2 END {: RESULT = new Let(symbol(x), e1, e2); :}
+    | e:l e:r {: RESULT = new App(l, r, false); :} %prec APP
+    | e:l STRICT e:r {: RESULT = new App(l, r, true); :} %prec APP
+    | LET ID:x EQ e:e1 IN e:e2 END {: RESULT = new Let(symbol(x), e1, e2, false); :}
+    | LET STRICT ID:x EQ e:e1 IN e:e2 END {: RESULT = new Let(symbol(x), e1, e2, true); :}
     | IF e:e1 THEN e:e2 ELSE e:e3 {: RESULT = new Cond(e1, e2, e3); :}
     | WHILE e:e1 DO e:e2 {: RESULT = new Loop(e1, e2); :}
     | UNIT {: RESULT = new Unit(); :}

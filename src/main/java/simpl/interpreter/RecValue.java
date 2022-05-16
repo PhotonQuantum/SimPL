@@ -16,7 +16,7 @@ public class RecValue extends Value {
     }
 
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(State s, Value other) {
         return false;
     }
 }

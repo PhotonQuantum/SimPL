@@ -18,6 +18,6 @@ public class Neq extends EqExpr {
     @Override
     public Value eval(State s) throws RuntimeError {
         // E-Neq.
-        return new BoolValue(!l.eval(s).equals(r.eval(s)));
+        return new BoolValue(!l.eval(s).equals(s, r.eval(s)));
     }
 }

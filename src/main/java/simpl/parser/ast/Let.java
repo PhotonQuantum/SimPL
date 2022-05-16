@@ -12,11 +12,13 @@ public class Let extends Expr {
     public final Symbol x;
     public final Expr e1;
     public final Expr e2;
+    public final Boolean strict;
 
-    public Let(Symbol x, Expr e1, Expr e2) {
+    public Let(Symbol x, Expr e1, Expr e2, Boolean strict) {
         this.x = x;
         this.e1 = e1;
         this.e2 = e2;
+        this.strict = strict;
     }
 
     public String toString() {
@@ -40,11 +42,13 @@ public class Let extends Expr {
 
     @Override
     public Value eval(@NotNull State s) throws RuntimeError {
-        // E-Let
-        // TODO Call by value
-        // var v1 = e1.eval(s);
-        // Call by name
-        var v1 = ThunkValue.delay(s.E, e1);
+        Value v1;
+        if (strict || s.config.strict()) {
+            v1 = e1.eval(s);
+        } else {
+            v1 = ThunkValue.delay(s.E, e1);
+        }
+
         var E = Env.of(s.E, x, v1);
         return e2.eval(State.of(E, s.M, s.p, s.config));
     }

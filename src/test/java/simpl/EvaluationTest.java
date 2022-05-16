@@ -26,6 +26,7 @@ public class EvaluationTest {
             "doc/examples/pcf.fibonacci.spl:6765",
             "doc/examples/pcf.twice.spl:16",
             "doc/examples/letpoly.spl:0",
+            "doc/examples/effect.spl:pair@0@1",
     }, delimiter = ':')
     void mustEval(String filename, String expected) throws Exception {
         var program = Interpreter.of(new FileReader(filename));

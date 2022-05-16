@@ -4,9 +4,11 @@ import simpl.interpreter.*;
 import simpl.typing.*;
 
 public class App extends BinaryExpr {
+    public final Boolean strict;
 
-    public App(Expr l, Expr r) {
+    public App(Expr l, Expr r, Boolean strict) {
         super(l, r);
+        this.strict = strict;
     }
 
     public String toString() {
@@ -37,10 +39,13 @@ public class App extends BinaryExpr {
     public Value eval(State s) throws RuntimeError {
         // E-App
         if (l.eval(s) instanceof FunValue lhs) {
-            // TODO Call by value
-            // var rhs = r.eval(s); // Can't be inlined to next line because of side effects.
-            // Call by name
-            var rhs = ThunkValue.delay(s.E, r);
+            Value rhs;
+            if (strict || s.config.strict()) {
+                rhs = r.eval(s);    // may have side effects
+            } else {
+                rhs = ThunkValue.delay(s.E, r);
+            }
+
             var E = Env.of(lhs.E, lhs.x, rhs);
             return lhs.e.eval(State.of(E, s.M, s.p, s.config));
         }

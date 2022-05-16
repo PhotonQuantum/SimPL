@@ -1,0 +1,12 @@
+(let a = ref 0 in
+    let b = a := !a + 1; a in
+        !a
+    end
+end,
+let a = ref 0 in
+    let @b = a := !a + 1; a in
+        !a
+    end
+end)
+
+(* ==> pair@0@1 *)

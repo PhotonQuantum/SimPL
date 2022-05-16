@@ -7,12 +7,12 @@ public class UnitValue extends Value {
         super();
     }
 
-    public String toString() {
-        return "unit";
+    @Override
+    public boolean equals(State s, Value o) {
+        return o != null && getClass() == o.getClass();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        return o != null && getClass() == o.getClass();
+    public String toString() {
+        return "unit";
     }
 }

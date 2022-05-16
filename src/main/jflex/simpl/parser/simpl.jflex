@@ -93,6 +93,7 @@ Alphanumeric = [a-zA-Z0-9]+
     ";"  { return token(SEMI); }
     "("  { return token(LPAREN); }
     ")"  { return token(RPAREN); }
+    "@"  { return token(STRICT); }
     
     {Identifier} { return token(ID, yytext()); }
     {DecInteger} { return token(NUM, Integer.valueOf(yytext())); }

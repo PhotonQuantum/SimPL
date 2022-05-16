@@ -20,7 +20,7 @@ public class FunValue extends Value {
     }
 
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(State s, Value other) {
         return false;
     }
 }

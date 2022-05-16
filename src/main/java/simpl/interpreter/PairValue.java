@@ -17,7 +17,7 @@ public class PairValue extends Value {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(State s, Value o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PairValue pairValue = (PairValue) o;

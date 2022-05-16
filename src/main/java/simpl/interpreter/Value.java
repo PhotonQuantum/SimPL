@@ -8,5 +8,5 @@ public abstract class Value {
         super();
     }
 
-    public abstract boolean equals(Object other);
+    public abstract boolean equals(State s, Value other) throws RuntimeError;
 }
