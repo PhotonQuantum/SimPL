@@ -1,15 +1,15 @@
 package simpl.interpreter;
 
-public class RefValue implements Value {
+import org.jetbrains.annotations.NotNull;
 
-    public final int p;
+public class RefValue extends Mem.Cell implements Value {
 
-    public RefValue(int p) {
-        this.p = p;
+    public RefValue(Mem.@NotNull Cell cell) {
+        super(cell);
     }
 
     public String toString() {
-        return "ref@" + p;
+        return "ref@" + unsafeGetPointer();
     }
 
 
@@ -18,6 +18,6 @@ public class RefValue implements Value {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RefValue refValue = (RefValue) o;
-        return p == refValue.p;
+        return this.unsafeGetPointer() == refValue.unsafeGetPointer();
     }
 }

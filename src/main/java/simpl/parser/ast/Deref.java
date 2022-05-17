@@ -33,7 +33,7 @@ public class Deref extends UnaryExpr {
     public Value eval(State s) throws RuntimeError {
         // E-Deref
         if (e.eval(s) instanceof RefValue ref) {
-            return s.M.get(ref.p);
+            return ref.get();
         }
         throw new RuntimeError(e + " is not a reference");
     }

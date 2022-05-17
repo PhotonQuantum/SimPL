@@ -8,11 +8,11 @@ public class Int {
         this.n = n;
     }
 
-    public int get() {
-        return n;
+    public int increment() {
+        return n++;
     }
 
-    public void set(int n) {
-        this.n = n;
+    public int decrement() {
+        return n--;
     }
 }

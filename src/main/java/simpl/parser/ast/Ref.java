@@ -33,12 +33,8 @@ public class Ref extends UnaryExpr {
         // E-Ref
         var value = e.eval(s);
 
-        // Get free pointer.
-        var ptr = s.p.get();
-        s.p.set(ptr + 1);   // Update next pointer index.
+        var cell = s.M.allocate(value);
 
-        // Store value in free cell.
-        s.M.put(ptr, value);
-        return new RefValue(ptr);
+        return new RefValue(cell);
     }
 }

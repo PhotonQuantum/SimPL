@@ -36,7 +36,7 @@ public class Assign extends BinaryExpr {
     public Value eval(State s) throws RuntimeError {
         // E-Assign
         if (l.eval(s) instanceof RefValue lhs) {
-            s.M.put(lhs.p, r.eval(s));
+            lhs.set(r.eval(s));
             return UnitValue.INSTANCE;
         }
         throw new RuntimeError(l + " is not a reference");
