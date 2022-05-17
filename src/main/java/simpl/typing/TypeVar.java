@@ -7,7 +7,7 @@ import simpl.parser.Symbol;
 
 import java.util.Objects;
 
-public class TypeVar extends Type implements Comparable<TypeVar> {
+public class TypeVar implements Type, Comparable<TypeVar> {
 
     private static int tvcnt = 0;
     public final Symbol name;

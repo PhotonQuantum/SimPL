@@ -3,14 +3,9 @@ package simpl.typing;
 import kala.collection.immutable.ImmutableSet;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 
-public final class RefType extends Type {
-
-    public final Type t;
-
-    private RefType(Type t) {
-        this.t = t;
-    }
+public record RefType(Type t) implements Type {
 
     @Contract("_ -> new")
     public static @NotNull RefType of(Type t) {
@@ -45,7 +40,7 @@ public final class RefType extends Type {
 
     @Contract("_, _ -> new")
     @Override
-    public @NotNull Type replace(TypeVar a, Type t) {
+    public @NotNull @Unmodifiable Type replace(TypeVar a, Type t) {
         return RefType.of(this.t.replace(a, t));
     }
 

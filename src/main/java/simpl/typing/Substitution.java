@@ -4,22 +4,22 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import simpl.parser.Symbol;
 
-public abstract class Substitution {
+public interface Substitution {
 
-    public static final Substitution IDENTITY = new Identity();
+    Substitution IDENTITY = new Identity();
 
     @Contract("_, _ -> new")
-    public static @NotNull Substitution of(TypeVar a, Type t) {
+    static @NotNull Substitution of(TypeVar a, Type t) {
         return new Replace(a, t);
     }
 
-    public abstract <T extends TypeScheme> T applyOn(T t);
+    <T extends TypeScheme> T applyOn(T t);
 
-    public Substitution compose(Substitution inner) {
+    default Substitution compose(Substitution inner) {
         return new Compose(this, inner);
     }
 
-    public TypeEnv applyOn(final TypeEnv E) {
+    default TypeEnv applyOn(final TypeEnv E) {
         // We keep this method override instead of cons list because it doesn't touch free vars, and it's faster than
         // subst the whole list.
         return new TypeEnv() {
@@ -34,9 +34,9 @@ public abstract class Substitution {
     }
 
     @Override
-    public abstract String toString();
+    String toString();
 
-    private static final class Identity extends Substitution {
+    final class Identity implements Substitution {
         @Override
         public <T extends TypeScheme> T applyOn(T t) {
             return t;
@@ -49,7 +49,7 @@ public abstract class Substitution {
         }
     }
 
-    private static final class Replace extends Substitution {
+    final class Replace implements Substitution {
         private final TypeVar a;
         private final Type t;
 
@@ -72,7 +72,7 @@ public abstract class Substitution {
         }
     }
 
-    private static final class Compose extends Substitution {
+    final class Compose implements Substitution {
         private final Substitution f;
         private final Substitution g;
 

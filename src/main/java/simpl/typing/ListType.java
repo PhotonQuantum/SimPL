@@ -3,14 +3,9 @@ package simpl.typing;
 import kala.collection.immutable.ImmutableSet;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 
-public final class ListType extends Type {
-
-    public final Type t;
-
-    private ListType(Type t) {
-        this.t = t;
-    }
+public record ListType(Type t) implements Type {
 
     @Contract("_ -> new")
     public static @NotNull ListType of(Type t) {
@@ -45,7 +40,7 @@ public final class ListType extends Type {
 
     @Contract("_, _ -> new")
     @Override
-    public @NotNull Type replace(TypeVar a, Type t) {
+    public @NotNull @Unmodifiable Type replace(TypeVar a, Type t) {
         return ListType.of(this.t.replace(a, t));
     }
 

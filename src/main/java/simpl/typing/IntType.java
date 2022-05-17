@@ -5,12 +5,8 @@ import kala.collection.immutable.ImmutableSet;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-public final class IntType extends Type {
+public final class IntType implements Type {
     public static final IntType INSTANCE = new IntType();
-
-    private IntType() {
-        super();
-    }
 
     @Override
     public boolean isEqualityType() {

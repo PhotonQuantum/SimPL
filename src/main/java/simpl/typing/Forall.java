@@ -3,14 +3,7 @@ package simpl.typing;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-public final class Forall extends TypeScheme {
-    public final TypeVar a;
-    public final TypeScheme s;
-
-    public Forall(TypeVar a, TypeScheme s) {
-        this.a = a;
-        this.s = s;
-    }
+public record Forall(TypeVar a, TypeScheme s) implements TypeScheme {
 
     @Contract("_, _ -> new")
     @Override

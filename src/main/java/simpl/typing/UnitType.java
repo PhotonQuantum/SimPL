@@ -5,7 +5,7 @@ import kala.collection.immutable.ImmutableSet;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-public final class UnitType extends Type {
+public final class UnitType implements Type {
     public static final UnitType INSTANCE = new UnitType();
 
     private UnitType() {

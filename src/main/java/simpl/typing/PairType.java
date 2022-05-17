@@ -3,16 +3,9 @@ package simpl.typing;
 import kala.collection.immutable.ImmutableSet;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 
-public final class PairType extends Type {
-
-    public final Type t1;
-    public final Type t2;
-
-    private PairType(Type t1, Type t2) {
-        this.t1 = t1;
-        this.t2 = t2;
-    }
+public record PairType(Type t1, Type t2) implements Type {
 
     @Contract("_, _ -> new")
     public static @NotNull PairType of(Type t1, Type t2) {
@@ -47,7 +40,7 @@ public final class PairType extends Type {
 
     @Contract("_, _ -> new")
     @Override
-    public @NotNull Type replace(TypeVar a, Type t) {
+    public @NotNull @Unmodifiable Type replace(TypeVar a, Type t) {
         return PairType.of(t1.replace(a, t), t2.replace(a, t));
     }
 
