@@ -4,7 +4,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import simpl.parser.ast.Expr;
 
-public class ThunkValue extends Value {
+public class ThunkValue implements Value {
 
     public final Env E;
     public final Expr e;

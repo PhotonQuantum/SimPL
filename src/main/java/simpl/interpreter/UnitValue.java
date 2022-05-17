@@ -1,6 +1,6 @@
 package simpl.interpreter;
 
-public class UnitValue extends Value {
+public class UnitValue implements Value {
     public static final UnitValue INSTANCE = new UnitValue();
 
     private UnitValue() {

@@ -2,7 +2,7 @@ package simpl.interpreter;
 
 import org.jetbrains.annotations.NotNull;
 
-public class ConsValue extends Value {
+public class ConsValue implements Value {
 
     @NotNull
     public final Value v1, v2;

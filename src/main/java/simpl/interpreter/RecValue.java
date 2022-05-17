@@ -3,7 +3,7 @@ package simpl.interpreter;
 import simpl.parser.Symbol;
 import simpl.parser.ast.Expr;
 
-public class RecValue extends Value {
+public class RecValue implements Value {
 
     public final Env E;
     public final Symbol x;
