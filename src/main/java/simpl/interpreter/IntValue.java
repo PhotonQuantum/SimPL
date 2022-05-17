@@ -1,6 +1,6 @@
 package simpl.interpreter;
 
-public class IntValue implements Value {
+public final class IntValue implements Value {
 
     public final int n;
 

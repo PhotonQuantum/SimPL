@@ -1,5 +1,6 @@
 package simpl.parser.ast;
 
+import org.jetbrains.annotations.NotNull;
 import simpl.interpreter.RecValue;
 import simpl.interpreter.RuntimeError;
 import simpl.interpreter.State;
@@ -39,7 +40,7 @@ public class Rec extends Expr {
     }
 
     @Override
-    public Value eval(State s) throws RuntimeError {
+    public Value eval(@NotNull State s) throws RuntimeError {
         // E-Rec
         var recVal = new RecValue(s.E, x, e);
         return e.eval(State.of(s.E.extend(x, recVal), s.M, s.p, s.config));

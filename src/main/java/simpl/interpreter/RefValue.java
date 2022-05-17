@@ -2,7 +2,7 @@ package simpl.interpreter;
 
 import org.jetbrains.annotations.NotNull;
 
-public class RefValue extends Mem.Cell implements Value {
+public final class RefValue extends Mem.Cell implements Value, Comparable<RefValue> {
 
     public RefValue(Mem.@NotNull Cell cell) {
         super(cell);
@@ -19,5 +19,10 @@ public class RefValue extends Mem.Cell implements Value {
         if (o == null || getClass() != o.getClass()) return false;
         RefValue refValue = (RefValue) o;
         return this.unsafeGetPointer() == refValue.unsafeGetPointer();
+    }
+
+    @Override
+    public int compareTo(@NotNull RefValue o) {
+        return Integer.compare(unsafeGetPointer(), o.unsafeGetPointer());
     }
 }

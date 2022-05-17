@@ -34,6 +34,7 @@ public class Ref extends UnaryExpr {
         var value = e.eval(s);
 
         var cell = s.M.allocate(s, value);
+        System.err.println("Allocating ref " + e + " = " + value + " got cell " + cell.unsafeGetPointer());
 
         return new RefValue(cell);
     }

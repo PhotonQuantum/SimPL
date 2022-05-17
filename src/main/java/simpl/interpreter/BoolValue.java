@@ -1,6 +1,6 @@
 package simpl.interpreter;
 
-public class BoolValue implements Value {
+public final class BoolValue implements Value {
 
     public final boolean b;
 

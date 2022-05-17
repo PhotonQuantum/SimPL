@@ -13,8 +13,8 @@ import java.io.FileReader;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Interpreter {
-    Config config;
     final Expr program;
+    public Config config;
 
     private Interpreter(Expr program, Config config) {
         this.config = config;
@@ -28,8 +28,24 @@ public class Interpreter {
         return new Interpreter(program.expr(), Config.of(program.pragmas()));
     }
 
-    public void setConfig(Config config) {
-        this.config = config;
+    public static void main(String @NotNull [] args) {
+        try (var inp = new FileReader(args[0])) {
+            var program = Interpreter.of(inp);
+            program.typeCheck();
+            System.out.println(program.eval());
+        } catch (SyntaxError e) {
+            System.out.println("syntax error");
+            System.err.println(e.getMessage());
+        } catch (TypeError e) {
+            System.out.println("type error");
+            System.err.println(e.getMessage());
+            System.err.println("Trace:" + e.getCheckTrace());
+        } catch (RuntimeError e) {
+            System.out.println("runtime error");
+            System.err.println(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public Type typeCheck() throws TypeError {
@@ -54,26 +70,6 @@ public class Interpreter {
             throw e;
         } else {
             return (Value) result.get();
-        }
-    }
-
-    public static void main(String @NotNull [] args) {
-        try (var inp = new FileReader(args[0])) {
-            var program = Interpreter.of(inp);
-            program.typeCheck();
-            System.out.println(program.eval());
-        } catch (SyntaxError e) {
-            System.out.println("syntax error");
-            System.err.println(e.getMessage());
-        } catch (TypeError e) {
-            System.out.println("type error");
-            System.err.println(e.getMessage());
-            System.err.println("Trace:" + e.getCheckTrace());
-        } catch (RuntimeError e) {
-            System.out.println("runtime error");
-            System.err.println(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }

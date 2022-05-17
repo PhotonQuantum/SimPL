@@ -1,6 +1,6 @@
 package simpl.interpreter;
 
-public class NilValue implements Value {
+public final class NilValue implements Value {
     public static final NilValue INSTANCE = new NilValue();
 
     private NilValue() {

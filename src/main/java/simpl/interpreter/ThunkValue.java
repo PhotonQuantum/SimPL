@@ -1,14 +1,16 @@
 package simpl.interpreter;
 
+import kala.collection.immutable.ImmutableSet;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import simpl.parser.ast.Expr;
 
-public class ThunkValue implements Value {
+public final class ThunkValue implements Value {
 
     public final Env E;
     public final Expr e;
     public Value cachedValue = null;
+    public ImmutableSet<RefValue> cachedRefValues = null;
 
     private ThunkValue(Env E, Expr e) {
         this.E = E;
@@ -22,8 +24,12 @@ public class ThunkValue implements Value {
 
     public Value force(State s) throws RuntimeError {
         if (cachedValue == null) {
-            cachedValue = e.eval(State.of(E, s.M, s.p, s.config.join(new Config(null, false, null, null))));
+            s.M.updateRoot(s.E);    // Keep the root of the current stack in sync with the current environment
+            s.M.pushRoot(E);        // Push the closure environment onto the stack
+            cachedValue = e.eval(State.of(E, s.M, s.p, s.config));
+            s.M.popRoot();
         }
+        cachedRefValues = cachedValue.collectRefValues();
         return cachedValue;
     }
 

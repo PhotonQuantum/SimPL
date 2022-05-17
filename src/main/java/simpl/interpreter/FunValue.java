@@ -3,7 +3,7 @@ package simpl.interpreter;
 import simpl.parser.Symbol;
 import simpl.parser.ast.Expr;
 
-public class FunValue implements Value {
+public non-sealed class FunValue implements Value {
 
     public final Env E;
     public final Symbol x;
