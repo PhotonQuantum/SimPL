@@ -20,8 +20,8 @@ public class InitialState extends State {
                     .extend(Symbol.of("pred"), Pred.INSTANCE)
                     .extend(Symbol.of("succ"), Succ.INSTANCE);
 
-    public InitialState() {
-        super(initialEnv, new Mem(), new Int(0), Config.DEFAULT);
+    public InitialState(Config config) {
+        super(initialEnv, new Mem(), new Int(0), config);
     }
 
 }
