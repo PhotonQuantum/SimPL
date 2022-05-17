@@ -1,11 +1,13 @@
 package simpl.interpreter;
 
+import kala.collection.MapView;
+import kala.collection.base.MapIterator;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import simpl.parser.Symbol;
 
-public class Env {
+public class Env implements MapView<Symbol, Value> {
 
     public static final Env EMPTY = new Env() {
         @Contract(pure = true)
@@ -40,6 +42,44 @@ public class Env {
 
     public @NotNull Env extend(Symbol x, Value v) {
         return of(this, x, v);
+    }
+
+    public static class EnvIterator implements MapIterator<Symbol, Value> {
+        private final Env base;
+        private Env current;
+
+        private EnvIterator(@NotNull Env base) {
+            this.base = base;
+        }
+
+        @Override
+        public boolean hasNext() {
+            if (current == null) return true;
+            return current.E != null;
+        }
+
+        @Override
+        public Symbol nextKey() {
+            if (current == null) {
+                current = base;
+            } else {
+                current = current.E;
+            }
+
+            if (current != null) return current.x;
+            return null;
+        }
+
+        @Override
+        public Value getValue() {
+            if (current != null) return current.v;
+            return null;
+        }
+    }
+
+    @Override
+    public @NotNull MapIterator<Symbol, Value> iterator() {
+        return new EnvIterator(this);
     }
 
     public Value get(@NotNull Symbol y) {

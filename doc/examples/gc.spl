@@ -1,0 +1,22 @@
+{-# HeapSize=5 #-}
+let a = ref 0 in
+	let b= ref 1 in
+		a := !a + !b;
+		let c = ref 2 in
+			a :=!a+!c;
+			let d = ref 6 in
+				a := !a + !d
+			end
+		end
+	end;
+	let e = ref 3 in
+		a := !a + !e
+	end;
+	let f = ref 4 in
+		a := !a + !f
+	end;
+	let g = ref 5 in
+		a := !a + !g
+	end;
+	!a
+end

@@ -22,7 +22,7 @@ public class ThunkValue implements Value {
 
     public Value force(State s) throws RuntimeError {
         if (cachedValue == null) {
-            cachedValue = e.eval(State.of(E, s.M, s.p, s.config));
+            cachedValue = e.eval(State.of(E, s.M, s.p, s.config.join(new Config(null, false, null, null))));
         }
         return cachedValue;
     }

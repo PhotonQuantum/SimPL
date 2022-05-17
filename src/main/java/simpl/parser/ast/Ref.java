@@ -33,7 +33,7 @@ public class Ref extends UnaryExpr {
         // E-Ref
         var value = e.eval(s);
 
-        var cell = s.M.allocate(value);
+        var cell = s.M.allocate(s, value);
 
         return new RefValue(cell);
     }
