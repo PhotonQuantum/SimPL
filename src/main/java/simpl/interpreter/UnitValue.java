@@ -1,5 +1,8 @@
 package simpl.interpreter;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 public final class UnitValue implements Value {
     public static final UnitValue INSTANCE = new UnitValue();
 
@@ -12,7 +15,8 @@ public final class UnitValue implements Value {
         return o != null && getClass() == o.getClass();
     }
 
-    public String toString() {
+    @Contract(pure = true)
+    public @NotNull String toString() {
         return "unit";
     }
 }

@@ -35,7 +35,7 @@ public class Not extends UnaryExpr {
     public Value eval(State s) throws RuntimeError {
         // E-Not
         if (e.eval(s) instanceof BoolValue boolValue) {
-            return new BoolValue(!boolValue.b);
+            return new BoolValue(!boolValue.b());
         }
         throw new RuntimeError(e + " is not a boolean");
     }

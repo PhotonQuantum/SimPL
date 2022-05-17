@@ -41,8 +41,8 @@ public class Name extends Expr {
 
         if (v instanceof RecValue recValue) {
             // E-Name1
-            var recExpr = new Rec(x, recValue.e);
-            return recExpr.eval(State.of(recValue.E, s.M, s.p, s.config));
+            var recExpr = new Rec(x, recValue.e());
+            return recExpr.eval(State.of(recValue.E(), s.M, s.config));
         }
 
         // E-Name2

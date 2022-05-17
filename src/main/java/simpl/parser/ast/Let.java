@@ -49,7 +49,6 @@ public class Let extends Expr {
             v1 = ThunkValue.delay(s.E, e1);
         }
 
-        var E = Env.of(s.E, x, v1);
-        return e2.eval(State.of(E, s.M, s.p, s.config));
+        return e2.eval(State.of(s.E.extend(x, v1), s.M, s.config));
     }
 }

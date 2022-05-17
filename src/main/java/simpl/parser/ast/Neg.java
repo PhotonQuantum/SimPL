@@ -35,7 +35,7 @@ public class Neg extends UnaryExpr {
     public Value eval(State s) throws RuntimeError {
         // E-Neg
         if (e.eval(s) instanceof IntValue intValue) {
-            return new IntValue(-intValue.n);
+            return new IntValue(-intValue.n());
         }
         throw new RuntimeError(e + " is not an integer");
     }

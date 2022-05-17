@@ -1,14 +1,12 @@
 package simpl.interpreter;
 
-public final class IntValue implements Value {
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
-    public final int n;
+public record IntValue(int n) implements Value {
 
-    public IntValue(int n) {
-        this.n = n;
-    }
-
-    public String toString() {
+    @Contract(pure = true)
+    public @NotNull String toString() {
         return "" + n;
     }
 

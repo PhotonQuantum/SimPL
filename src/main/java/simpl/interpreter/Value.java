@@ -14,7 +14,7 @@ public sealed interface Value permits BoolValue, ConsValue, FunValue, IntValue, 
         if (this instanceof BoolValue) {
             return ImmutableCompactSet.empty();
         } else if (this instanceof ConsValue cons) {
-            return cons.v1.collectRefValues().addedAll(cons.v2.collectRefValues());
+            return cons.v1().collectRefValues().addedAll(cons.v2().collectRefValues());
         } else if (this instanceof FunValue) {
             return ImmutableCompactSet.empty();
         } else if (this instanceof IntValue) {
@@ -22,7 +22,7 @@ public sealed interface Value permits BoolValue, ConsValue, FunValue, IntValue, 
         } else if (this instanceof NilValue) {
             return ImmutableCompactSet.empty();
         } else if (this instanceof PairValue pair) {
-            return pair.v1.collectRefValues().addedAll(pair.v2.collectRefValues());
+            return pair.v1().collectRefValues().addedAll(pair.v2().collectRefValues());
         } else if (this instanceof RecValue) {
             return ImmutableCompactSet.empty();
         } else if (this instanceof RefValue ref) {

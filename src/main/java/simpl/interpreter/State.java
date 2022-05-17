@@ -13,7 +13,7 @@ import simpl.parser.Symbol;
 
 public class State {
     public static final Env initialEnv =
-            Env.of(Env.EMPTY, Symbol.of("fst"), Fst.INSTANCE)
+            Env.EMPTY.extend(Symbol.of("fst"), Fst.INSTANCE)
                     .extend(Symbol.of("snd"), Snd.INSTANCE)
                     .extend(Symbol.of("hd"), Hd.INSTANCE)
                     .extend(Symbol.of("tl"), Tl.INSTANCE)
@@ -22,25 +22,23 @@ public class State {
                     .extend(Symbol.of("succ"), Succ.INSTANCE);
     public final Env E;
     public final Mem M;
-    public final Int p;
     public final Config config;
 
-    protected State(Env E, Mem M, Int p, Config config) {
+    protected State(Env E, Mem M, Config config) {
         this.E = E;
         this.M = M;
-        this.p = p;
         this.config = config;
     }
 
-    @Contract(value = "_, _, _, _ -> new", pure = true)
-    public static @NotNull State of(Env E, Mem M, Int p, Config c) {
-        return new State(E, M, p, c);
+    @Contract(value = "_, _, _ -> new", pure = true)
+    public static @NotNull State of(Env E, Mem M, Config c) {
+        return new State(E, M, c);
     }
 
     public static @NotNull State create(Config c) {
         var E = initialEnv;
         var M = new Mem();
         M.pushRoot(E);
-        return State.of(E, M, new Int(0), c);
+        return State.of(E, M, c);
     }
 }

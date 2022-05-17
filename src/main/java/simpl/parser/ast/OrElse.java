@@ -45,14 +45,14 @@ public class OrElse extends BinaryExpr {
     @Override
     public Value eval(State s) throws RuntimeError {
         if (l.eval(s) instanceof BoolValue lhs) {
-            if (lhs.b) {
+            if (lhs.b()) {
                 // E-OrElse1
                 return new BoolValue(true);
             }
 
             // E-OrElse2
             if (r.eval(s) instanceof BoolValue rhs) {
-                return new BoolValue(rhs.b);
+                return new BoolValue(rhs.b());
             }
             throw new RuntimeError(r + " is not a boolean");
         }

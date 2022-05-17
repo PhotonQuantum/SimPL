@@ -22,7 +22,7 @@ public class Hd extends FunValue {
             public Value eval(State s) throws RuntimeError {
                 var x = new Name(Symbol.of("x")).eval(s);
                 if (x instanceof ConsValue l) {
-                    return l.v1;
+                    return l.v1();
                 }
                 throw new RuntimeError(x + " is not a cons");
             }

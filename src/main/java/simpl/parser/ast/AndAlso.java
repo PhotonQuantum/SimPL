@@ -45,14 +45,14 @@ public class AndAlso extends BinaryExpr {
     @Override
     public Value eval(State s) throws RuntimeError {
         if (l.eval(s) instanceof BoolValue lhs) {
-            if (!lhs.b) {
+            if (!lhs.b()) {
                 // E-AndAlso2
                 return new BoolValue(false);
             }
 
             // E-AndAlso1
             if (r.eval(s) instanceof BoolValue rhs) {
-                return new BoolValue(rhs.b);
+                return new BoolValue(rhs.b());
             }
             throw new RuntimeError(r + " is not a boolean");
         }

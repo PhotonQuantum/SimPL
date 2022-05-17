@@ -43,7 +43,7 @@ public class Loop extends Expr {
     @Override
     public Value eval(State s) throws RuntimeError {
         if (e1.eval(s) instanceof BoolValue predicate) {
-            return (predicate.b) ? new Seq(e2, this).eval(s) : UnitValue.INSTANCE;
+            return (predicate.b()) ? new Seq(e2, this).eval(s) : UnitValue.INSTANCE;
         }
         throw new RuntimeError(e1 + " is not a boolean");
     }

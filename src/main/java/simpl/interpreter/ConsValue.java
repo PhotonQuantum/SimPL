@@ -1,18 +1,17 @@
 package simpl.interpreter;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-public final class ConsValue implements Value {
-
-    @NotNull
-    public final Value v1, v2;
+public record ConsValue(@NotNull Value v1, @NotNull Value v2) implements Value {
 
     public ConsValue(@NotNull Value v1, @NotNull Value v2) {
         this.v1 = v1;
         this.v2 = v2;
     }
 
-    public String toString() {
+    @Contract(pure = true)
+    public @NotNull String toString() {
         return "list@" + length();
     }
 

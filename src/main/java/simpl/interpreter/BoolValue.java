@@ -1,14 +1,12 @@
 package simpl.interpreter;
 
-public final class BoolValue implements Value {
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
-    public final boolean b;
+public record BoolValue(boolean b) implements Value {
 
-    public BoolValue(boolean b) {
-        this.b = b;
-    }
-
-    public String toString() {
+    @Contract(pure = true)
+    public @NotNull String toString() {
         return "" + b;
     }
 

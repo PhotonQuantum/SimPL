@@ -8,7 +8,7 @@ public final class RefValue extends Mem.Cell implements Value, Comparable<RefVal
         super(cell);
     }
 
-    public String toString() {
+    public @NotNull String toString() {
         return "ref@" + unsafeGetPointer();
     }
 

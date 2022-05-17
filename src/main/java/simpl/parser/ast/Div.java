@@ -20,10 +20,10 @@ public class Div extends ArithExpr {
         // E-Div
         if (l.eval(s) instanceof IntValue lhs) {
             if (r.eval(s) instanceof IntValue rhs) {
-                if (rhs.n == 0) {
+                if (rhs.n() == 0) {
                     throw new RuntimeError("Division by zero");
                 }
-                return new IntValue(lhs.n / rhs.n);
+                return new IntValue(lhs.n() / rhs.n());
             }
             throw new RuntimeError(r + " is not an integer");
         }

@@ -3,17 +3,7 @@ package simpl.interpreter;
 import simpl.parser.Symbol;
 import simpl.parser.ast.Expr;
 
-public final class RecValue implements Value {
-
-    public final Env E;
-    public final Symbol x;
-    public final Expr e;
-
-    public RecValue(Env E, Symbol x, Expr e) {
-        this.E = E;
-        this.x = x;
-        this.e = e;
-    }
+public record RecValue(Env E, Symbol x, Expr e) implements Value {
 
     @Override
     public boolean equals(State s, Value other) {

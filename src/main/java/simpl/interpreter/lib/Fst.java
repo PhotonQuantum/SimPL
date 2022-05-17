@@ -22,7 +22,7 @@ public class Fst extends FunValue {
             public Value eval(State s) throws RuntimeError {
                 var x = new Name(Symbol.of("x")).eval(s);
                 if (x instanceof PairValue pair) {
-                    return pair.v1;
+                    return pair.v1();
                 }
                 throw new RuntimeError(x + " is not a pair");
             }

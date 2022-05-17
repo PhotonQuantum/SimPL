@@ -46,8 +46,7 @@ public class App extends BinaryExpr {
                 rhs = ThunkValue.delay(s.E, r);
             }
 
-            var E = Env.of(lhs.E, lhs.x, rhs);
-            return lhs.e.eval(State.of(E, s.M, s.p, s.config));
+            return lhs.e.eval(State.of(lhs.E.extend(lhs.x, rhs), s.M, s.config));
         }
         throw new RuntimeError(l + " is not a function");
     }

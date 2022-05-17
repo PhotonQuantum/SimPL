@@ -26,7 +26,7 @@ public final class ThunkValue implements Value {
         if (cachedValue == null) {
             s.M.updateRoot(s.E);    // Keep the root of the current stack in sync with the current environment
             s.M.pushRoot(E);        // Push the closure environment onto the stack
-            cachedValue = e.eval(State.of(E, s.M, s.p, s.config));
+            cachedValue = e.eval(State.of(E, s.M, s.config));
             s.M.popRoot();
         }
         cachedRefValues = cachedValue.collectRefValues();

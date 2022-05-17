@@ -16,7 +16,7 @@ public class LessEq extends RelExpr {
     public Value eval(State s) throws RuntimeError {
         if (l.eval(s) instanceof IntValue lhs) {
             if (r.eval(s) instanceof IntValue rhs) {
-                return new BoolValue(lhs.n <= rhs.n);
+                return new BoolValue(lhs.n() <= rhs.n());
             }
             throw new RuntimeError(r + " is not an integer");
         }

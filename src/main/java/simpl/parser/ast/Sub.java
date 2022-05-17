@@ -20,7 +20,7 @@ public class Sub extends ArithExpr {
         // E-Sub.
         if (l.eval(s) instanceof IntValue lhs) {
             if (r.eval(s) instanceof IntValue rhs) {
-                return new IntValue(lhs.n - rhs.n);
+                return new IntValue(lhs.n() - rhs.n());
             }
             throw new RuntimeError(r + " is not an integer");
         }

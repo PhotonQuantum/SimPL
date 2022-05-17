@@ -16,10 +16,6 @@ public class Env implements MapView<Symbol, Value> {
         public @Nullable Value get(@NotNull Symbol y) {
             return null;
         }
-
-        public Env copy() {
-            return this;
-        }
     };
     private final Env E;
     private final Symbol x;
@@ -58,11 +54,6 @@ public class Env implements MapView<Symbol, Value> {
             return v;
         }
         return E.get(y);
-    }
-
-    public Env copy() {
-        assert E != null;
-        return Env.of(E.copy(), /* interned */ x, /* immutable */ v);
     }
 
     public static class EnvIterator implements MapIterator<Symbol, Value> {
