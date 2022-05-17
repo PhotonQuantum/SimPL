@@ -41,7 +41,7 @@ public class Interpreter {
 
         Runnable f = () -> {
             try {
-                result.set(program.eval(new InitialState(config)));
+                result.set(program.eval(State.create(config)));
             } catch (RuntimeError e) {
                 result.set(e);
             }
