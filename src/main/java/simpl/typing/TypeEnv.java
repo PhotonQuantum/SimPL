@@ -34,6 +34,8 @@ public class TypeEnv {
         var tySnd = new TypeVar(true);
         var tyHd = new TypeVar(true);
         var tyTl = new TypeVar(true);
+        var tySHd = new TypeVar(true);
+        var tySTl = new TypeVar(true);
 
         var defaultTypes = ImmutableSeq.of(
                 // fst: τ1 × τ2 → τ1
@@ -44,6 +46,10 @@ public class TypeEnv {
                 Tuple2.of(Symbol.of("hd"), ArrowType.of(ListType.of(tyHd), tyHd)),
                 // tl: τ list → τ list
                 Tuple2.of(Symbol.of("tl"), ArrowType.of(ListType.of(tyTl), ListType.of(tyTl))),
+                // shd: τ stream → τ
+                Tuple2.of(Symbol.of("shd"), ArrowType.of(StreamType.of(tySHd), tySHd)),
+                // stl: τ stream → τ stream
+                Tuple2.of(Symbol.of("stl"), ArrowType.of(StreamType.of(tySTl), StreamType.of(tySTl))),
                 // iszero: int → bool
                 Tuple2.of(Symbol.of("iszero"), ArrowType.of(IntType.INSTANCE, BoolType.INSTANCE)),
                 // succ: int → int

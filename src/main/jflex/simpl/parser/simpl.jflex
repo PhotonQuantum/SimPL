@@ -83,6 +83,7 @@ Alphanumeric = [a-zA-Z0-9]+
     ">=" { return token(GE); }
     
     "::" { return token(CONS); }
+    ";;" { return token(SCONS); }
     "()" { return token(UNIT); }
     "=>" { return token(ARROW); }
     

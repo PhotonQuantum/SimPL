@@ -2,10 +2,7 @@ package simpl.interpreter;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import simpl.interpreter.lib.Fst;
-import simpl.interpreter.lib.Hd;
-import simpl.interpreter.lib.Snd;
-import simpl.interpreter.lib.Tl;
+import simpl.interpreter.lib.*;
 import simpl.interpreter.pcf.IsZero;
 import simpl.interpreter.pcf.Pred;
 import simpl.interpreter.pcf.Succ;
@@ -17,6 +14,8 @@ public class State {
                     .extend(Symbol.of("snd"), Snd.INSTANCE)
                     .extend(Symbol.of("hd"), Hd.INSTANCE)
                     .extend(Symbol.of("tl"), Tl.INSTANCE)
+                    .extend(Symbol.of("shd"), SHd.INSTANCE)
+                    .extend(Symbol.of("stl"), STl.INSTANCE)
                     .extend(Symbol.of("iszero"), IsZero.INSTANCE)
                     .extend(Symbol.of("pred"), Pred.INSTANCE)
                     .extend(Symbol.of("succ"), Succ.INSTANCE);

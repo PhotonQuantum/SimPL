@@ -25,7 +25,7 @@ terminal TRUE, FALSE;
 terminal NOT, ANDALSO, ORELSE;
 terminal ADD, SUB, MUL, DIV, MOD, NEG;
 terminal EQ, NE, LT, LE, GT, GE;
-terminal CONS, UNIT, ARROW;
+terminal CONS, SCONS, UNIT, ARROW;
 terminal ASSIGN, DEREF;
 terminal COMMA, SEMI, LPAREN, RPAREN;
 terminal APP;
@@ -43,7 +43,7 @@ precedence nonassoc ASSIGN;
 precedence right ORELSE;
 precedence right ANDALSO;
 precedence nonassoc EQ, NE, LT, LE, GT, GE;
-precedence right CONS;
+precedence right CONS, SCONS;
 precedence left ADD, SUB;
 precedence left MUL, DIV, MOD;
 precedence left APP, LPAREN;
@@ -82,6 +82,7 @@ e ::= NUM:n {: RESULT = new IntegerLiteral(n.intValue()); :}
     | e:l ANDALSO e:r {: RESULT = new AndAlso(l, r); :}
     | e:l ORELSE e:r {: RESULT = new OrElse(l, r); :}
     | e:l CONS e:r {: RESULT = new Cons(l, r); :}
+    | e:l SCONS e:r {: RESULT = new SCons(l, r); :}
     | e:l ASSIGN e:r {: RESULT = new Assign(l, r); :}
     | e:l SEMI e:r {: RESULT = new Seq(l, r); :}
     | e:l e:r {: RESULT = new App(l, r, false); :} %prec APP
