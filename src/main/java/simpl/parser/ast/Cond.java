@@ -9,17 +9,7 @@ import simpl.typing.TypeEnv;
 import simpl.typing.TypeError;
 import simpl.typing.TypeResult;
 
-public class Cond extends Expr {
-
-    public final Expr e1;
-    public final Expr e2;
-    public final Expr e3;
-
-    public Cond(Expr e1, Expr e2, Expr e3) {
-        this.e1 = e1;
-        this.e2 = e2;
-        this.e3 = e3;
-    }
+public record Cond(Expr e1, Expr e2, Expr e3) implements Expr {
 
     public String toString() {
         return "(if " + e1 + " then " + e2 + " else " + e3 + ")";

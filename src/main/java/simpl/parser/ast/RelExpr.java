@@ -4,7 +4,7 @@ import simpl.typing.*;
 
 public abstract class RelExpr extends BinaryExpr {
 
-    public RelExpr(Expr l, Expr r) {
+    protected RelExpr(Expr l, Expr r) {
         super(l, r);
     }
 

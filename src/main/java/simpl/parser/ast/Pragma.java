@@ -3,26 +3,19 @@ package simpl.parser.ast;
 import kala.collection.immutable.ImmutableMap;
 import kala.collection.mutable.MutableMap;
 import kala.tuple.Tuple;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
-public class Pragma implements EntryPoint {
-    private final String pragma;
-    private final String value;
-    private final EntryPoint next;
-
-    public Pragma(String pragma, String value, EntryPoint next) {
-        this.pragma = pragma;
-        this.value = value;
-        this.next = next;
-    }
-
-    public String toString() {
+public record Pragma(String pragma, String value, EntryPoint next) implements EntryPoint {
+    @Contract(pure = true)
+    public @NotNull String toString() {
         if (value == null)
             return "{#- " + pragma + " -#}\n" + next;
         return "{#- " + pragma + ": " + value + " -#}\n" + next;
     }
 
     @Override
-    public ImmutableMap<String, String> pragmas() {
+    public @NotNull ImmutableMap<String, String> pragmas() {
         MutableMap<String, String> pragmas = MutableMap.create();
         EntryPoint curr = this;
         while (curr instanceof Pragma p) {

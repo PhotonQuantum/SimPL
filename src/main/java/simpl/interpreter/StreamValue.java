@@ -11,6 +11,6 @@ public record StreamValue(Value head, ThunkValue tail) implements Value {
 
     @Contract(pure = true)
     public @NotNull String toString() {
-        return "list";
+        return "stream";
     }
 }

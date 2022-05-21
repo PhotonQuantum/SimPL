@@ -2,15 +2,16 @@ package simpl.interpreter;
 
 import kala.collection.immutable.ImmutableCompactSet;
 import kala.collection.mutable.MutableList;
-import kala.collection.mutable.MutableSinglyLinkedList;
 import kala.collection.mutable.MutableStack;
 import kala.function.CheckedFunction;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 public class Mem {
     private final MutableCell<MutableList<Value>> storage = MutableCell.of(MutableList.create());
-    private final MutableStack<Env> roots = MutableSinglyLinkedList.create();
+    private final MutableStack<Env> roots = MutableStack.create();
 
     public Mem() {
     }
@@ -19,7 +20,7 @@ public class Mem {
         updateRoot(s.E);
         var heapUsage = (float) storage.get().size() / s.config.heapSize();
         if (heapUsage >= s.config.gcThreshold()) {
-            System.err.printf("[Alloc] Heap used percentage: %.2f >= %.2f, triggering GC\n",
+            System.err.printf("[Alloc] Heap used percentage: %.2f >= %.2f, triggering GC%n",
                     heapUsage, s.config.gcThreshold());
             gc();
         }
@@ -54,10 +55,11 @@ public class Mem {
         // Scan for cells that are reachable from the root.
         var reachable = roots.view()
                 .flatMap(E -> E.valuesView().flatMap(CheckedFunction.of(Value::collectRefValues)))
-                // .flatMap(E -> E.valuesView().filter(v -> v instanceof RefValue).map(v -> (RefValue) v))
                 .collect(ImmutableCompactSet.factory())
                 .toImmutableSeq();
+        // Copy reachable cells to a new heap.
         var newStorage = MutableList.from(reachable.view().map(Cell::get));
+        // Update the storage and index of all cells.
         reachable.view().forEachIndexed((i, v) -> {
             v.storage.set(newStorage);
             v.pointer.set(i);
@@ -100,6 +102,11 @@ public class Mem {
             if (o == null || getClass() != o.getClass()) return false;
             Cell cell = (Cell) o;
             return pointer == cell.pointer;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(pointer);
         }
     }
 }

@@ -11,15 +11,7 @@ import simpl.typing.TypeError;
 import simpl.typing.TypeResult;
 import simpl.typing.TypeVar;
 
-public class Rec extends Expr {
-
-    public final Symbol x;
-    public final Expr e;
-
-    public Rec(Symbol x, Expr e) {
-        this.x = x;
-        this.e = e;
-    }
+public record Rec(Symbol x, Expr e) implements Expr {
 
     public String toString() {
         return "(rec " + x + "." + e + ")";

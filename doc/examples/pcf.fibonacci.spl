@@ -1,4 +1,3 @@
-{-# StackSize=10240000 #-}
 let plus = rec p =>
       fn x => fn y => if iszero x then y else p (pred x) (succ y)
 in

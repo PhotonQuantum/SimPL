@@ -1,32 +1,23 @@
 package simpl.parser.ast;
 
 import org.jetbrains.annotations.NotNull;
-import simpl.interpreter.*;
+import simpl.interpreter.RuntimeError;
+import simpl.interpreter.State;
+import simpl.interpreter.ThunkValue;
+import simpl.interpreter.Value;
 import simpl.parser.Symbol;
 import simpl.typing.TypeEnv;
 import simpl.typing.TypeError;
 import simpl.typing.TypeResult;
 
-public class Let extends Expr {
-
-    public final Symbol x;
-    public final Expr e1;
-    public final Expr e2;
-    public final Boolean strict;
-
-    public Let(Symbol x, Expr e1, Expr e2, Boolean strict) {
-        this.x = x;
-        this.e1 = e1;
-        this.e2 = e2;
-        this.strict = strict;
-    }
+public record Let(Symbol x, Expr e1, Expr e2, Boolean strict) implements Expr {
 
     public String toString() {
         return "(let " + x + " = " + e1 + " in " + e2 + ")";
     }
 
     @Override
-    public TypeResult typeCheck(TypeEnv E) throws TypeError {
+    public @NotNull TypeResult typeCheck(TypeEnv E) throws TypeError {
         /* W(Γ; e1) = (S1; τ1) */
         var W1 = e1.typeCheck(E);
 

@@ -7,7 +7,7 @@ import simpl.typing.TypeResult;
 
 public abstract class EqExpr extends BinaryExpr {
 
-    public EqExpr(Expr l, Expr r) {
+    protected EqExpr(Expr l, Expr r) {
         super(l, r);
     }
 

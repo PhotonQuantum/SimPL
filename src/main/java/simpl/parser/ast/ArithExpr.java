@@ -7,7 +7,7 @@ import simpl.typing.TypeResult;
 
 public abstract class ArithExpr extends BinaryExpr {
 
-    public ArithExpr(Expr l, Expr r) {
+    protected ArithExpr(Expr l, Expr r) {
         super(l, r);
     }
 

@@ -1,4 +1,4 @@
-{-# HeapSize=4 #-}
+{-# HeapSize=3 #-}
 let a = ref 0 in
 	let b= ref 1 in
 		a := !a + !b;

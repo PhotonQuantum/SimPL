@@ -8,9 +8,16 @@ import simpl.typing.TypeEnv;
 import simpl.typing.TypeError;
 import simpl.typing.TypeResult;
 
-public abstract class Expr implements EntryPoint {
+public interface Expr extends EntryPoint {
 
-    public abstract TypeResult typeCheck(TypeEnv E) throws TypeError;
+    /**
+     * Type check this expression.
+     *
+     * @param E The type environment.
+     * @return Constraints and type of this expression.
+     * @throws TypeError If this expression is ill-typed.
+     */
+    TypeResult typeCheck(TypeEnv E) throws TypeError;
 
     /**
      * Evaluate this expression in the given state.
@@ -19,15 +26,15 @@ public abstract class Expr implements EntryPoint {
      * @return The value of this expression.
      * @throws RuntimeError If this expression cannot be evaluated.
      */
-    public abstract Value eval(State s) throws RuntimeError;
+    Value eval(State s) throws RuntimeError;
 
     @Override
-    public ImmutableMap<String, String> pragmas() {
+    default ImmutableMap<String, String> pragmas() {
         return ImmutableMap.empty();
     }
 
     @Override
-    public Expr expr() {
+    default Expr expr() {
         return this;
     }
 }

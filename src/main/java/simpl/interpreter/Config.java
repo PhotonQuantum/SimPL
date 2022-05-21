@@ -8,7 +8,7 @@ public record Config(Boolean strict, Float gcThreshold, Integer stackSize, Integ
     public static @NotNull Config of(@NotNull ImmutableMap<String, String> pragma) {
         var strict = pragma.containsKey("Strict");
         var gcThreshold = Float.valueOf(pragma.getOrDefault("GCThreshold", "0.7"));
-        var stackSize = Integer.valueOf(pragma.getOrDefault("StackSize", "0"));
+        var stackSize = Integer.valueOf(pragma.getOrDefault("StackSize", "10240000"));
         var heapSize = Integer.valueOf(pragma.getOrDefault("HeapSize", "65536"));
         return new Config(strict, gcThreshold, stackSize, heapSize);
     }

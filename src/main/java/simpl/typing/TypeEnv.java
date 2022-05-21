@@ -3,7 +3,7 @@ package simpl.typing;
 import kala.collection.immutable.ImmutableCompactSet;
 import kala.collection.immutable.ImmutableSeq;
 import kala.collection.immutable.ImmutableSet;
-import kala.tuple.Tuple2;
+import kala.tuple.Tuple;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import simpl.parser.Symbol;
@@ -39,23 +39,23 @@ public class TypeEnv {
 
         var defaultTypes = ImmutableSeq.of(
                 // fst: τ1 × τ2 → τ1
-                Tuple2.of(Symbol.of("fst"), ArrowType.of(PairType.of(tyFst, new TypeVar(true)), tyFst)),
+                Tuple.of(Symbol.of("fst"), ArrowType.of(PairType.of(tyFst, new TypeVar(true)), tyFst)),
                 // snd: τ1 × τ2 → τ2
-                Tuple2.of(Symbol.of("snd"), ArrowType.of(PairType.of(new TypeVar(true), tySnd), tySnd)),
+                Tuple.of(Symbol.of("snd"), ArrowType.of(PairType.of(new TypeVar(true), tySnd), tySnd)),
                 // hd: τ list → τ
-                Tuple2.of(Symbol.of("hd"), ArrowType.of(ListType.of(tyHd), tyHd)),
+                Tuple.of(Symbol.of("hd"), ArrowType.of(ListType.of(tyHd), tyHd)),
                 // tl: τ list → τ list
-                Tuple2.of(Symbol.of("tl"), ArrowType.of(ListType.of(tyTl), ListType.of(tyTl))),
+                Tuple.of(Symbol.of("tl"), ArrowType.of(ListType.of(tyTl), ListType.of(tyTl))),
                 // shd: τ stream → τ
-                Tuple2.of(Symbol.of("shd"), ArrowType.of(StreamType.of(tySHd), tySHd)),
+                Tuple.of(Symbol.of("shd"), ArrowType.of(StreamType.of(tySHd), tySHd)),
                 // stl: τ stream → τ stream
-                Tuple2.of(Symbol.of("stl"), ArrowType.of(StreamType.of(tySTl), StreamType.of(tySTl))),
+                Tuple.of(Symbol.of("stl"), ArrowType.of(StreamType.of(tySTl), StreamType.of(tySTl))),
                 // iszero: int → bool
-                Tuple2.of(Symbol.of("iszero"), ArrowType.of(IntType.INSTANCE, BoolType.INSTANCE)),
+                Tuple.of(Symbol.of("iszero"), ArrowType.of(IntType.INSTANCE, BoolType.INSTANCE)),
                 // succ: int → int
-                Tuple2.of(Symbol.of("succ"), ArrowType.of(IntType.INSTANCE, IntType.INSTANCE)),
+                Tuple.of(Symbol.of("succ"), ArrowType.of(IntType.INSTANCE, IntType.INSTANCE)),
                 // pred: int → int
-                Tuple2.of(Symbol.of("pred"), ArrowType.of(IntType.INSTANCE, IntType.INSTANCE))
+                Tuple.of(Symbol.of("pred"), ArrowType.of(IntType.INSTANCE, IntType.INSTANCE))
         );
 
         return defaultTypes.foldLeft(new TypeEnv(), (E, symTy) -> TypeEnv.of(E, symTy._1, symTy._2.generalizeWith(E)));

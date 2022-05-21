@@ -7,13 +7,7 @@ import simpl.typing.IntType;
 import simpl.typing.TypeEnv;
 import simpl.typing.TypeResult;
 
-public class IntegerLiteral extends Expr {
-
-    public final int n;
-
-    public IntegerLiteral(int n) {
-        this.n = n;
-    }
+public record IntegerLiteral(int n) implements Expr {
 
     public String toString() {
         return "" + n;

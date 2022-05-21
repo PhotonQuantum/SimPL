@@ -3,15 +3,7 @@ package simpl.parser.ast;
 import simpl.interpreter.*;
 import simpl.typing.*;
 
-public class Loop extends Expr {
-
-    public final Expr e1;
-    public final Expr e2;
-
-    public Loop(Expr e1, Expr e2) {
-        this.e1 = e1;
-        this.e2 = e2;
-    }
+public record Loop(Expr e1, Expr e2) implements Expr {
 
     public String toString() {
         return "(while " + e1 + " do " + e2 + ")";

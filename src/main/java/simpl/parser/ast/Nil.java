@@ -8,7 +8,7 @@ import simpl.typing.TypeEnv;
 import simpl.typing.TypeResult;
 import simpl.typing.TypeVar;
 
-public class Nil extends Expr {
+public class Nil implements Expr {
 
     public String toString() {
         return "nil";

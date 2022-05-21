@@ -1,25 +1,21 @@
 package simpl.parser.ast;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import simpl.interpreter.*;
 import simpl.parser.Symbol;
 import simpl.typing.TypeEnv;
 import simpl.typing.TypeResult;
 
-public class Name extends Expr {
+public record Name(Symbol x) implements Expr {
 
-    public final Symbol x;
-
-    public Name(Symbol x) {
-        this.x = x;
-    }
-
-    public String toString() {
+    @Contract(pure = true)
+    public @NotNull String toString() {
         return "" + x;
     }
 
     @Override
-    public TypeResult typeCheck(@NotNull TypeEnv E) {
+    public @NotNull TypeResult typeCheck(@NotNull TypeEnv E) {
         /* τ = inst(Γ(x)) */
         var t = E.get(x).instantiate();
 

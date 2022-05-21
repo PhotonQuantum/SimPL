@@ -23,10 +23,12 @@ public interface Substitution {
         // We keep this method override instead of cons list because it doesn't touch free vars, and it's faster than
         // subst the whole list.
         return new TypeEnv() {
+            @Override
             public TypeScheme get(Symbol x) {
                 return applyOn(E.get(x));
             }
 
+            @Override
             public String toString() {
                 return x + ":" + get(x) + ";" + E;
             }

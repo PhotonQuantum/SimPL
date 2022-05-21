@@ -1,7 +1,10 @@
 package simpl.parser.ast;
 
 import simpl.interpreter.*;
-import simpl.typing.*;
+import simpl.typing.StreamType;
+import simpl.typing.TypeEnv;
+import simpl.typing.TypeError;
+import simpl.typing.TypeResult;
 
 public class SCons extends BinaryExpr {
     public SCons(Expr l, Expr r) {

@@ -7,15 +7,7 @@ import simpl.interpreter.Value;
 import simpl.parser.Symbol;
 import simpl.typing.*;
 
-public class Fn extends Expr {
-
-    public final Symbol x;
-    public final Expr e;
-
-    public Fn(Symbol x, Expr e) {
-        this.x = x;
-        this.e = e;
-    }
+public record Fn(Symbol x, Expr e) implements Expr {
 
     public String toString() {
         return "(fn " + x + "." + e + ")";

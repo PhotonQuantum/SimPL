@@ -5,11 +5,6 @@ import org.jetbrains.annotations.NotNull;
 
 public record PairValue(@NotNull Value v1, @NotNull Value v2) implements Value {
 
-    public PairValue(@NotNull Value v1, @NotNull Value v2) {
-        this.v1 = v1;
-        this.v2 = v2;
-    }
-
     @Contract(pure = true)
     public @NotNull String toString() {
         return "pair@" + v1 + "@" + v2;

@@ -3,7 +3,6 @@ package simpl;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import simpl.interpreter.Config;
 import simpl.interpreter.Interpreter;
@@ -14,7 +13,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-public class EvaluationTest {
+class EvaluationTest {
     @ParameterizedTest
     @MethodSource("evalSource")
     void mustEval(String filename, String expected) throws Exception {

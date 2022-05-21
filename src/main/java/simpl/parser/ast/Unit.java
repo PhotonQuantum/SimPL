@@ -7,7 +7,7 @@ import simpl.typing.TypeEnv;
 import simpl.typing.TypeResult;
 import simpl.typing.UnitType;
 
-public class Unit extends Expr {
+public class Unit implements Expr {
 
     public String toString() {
         return "()";

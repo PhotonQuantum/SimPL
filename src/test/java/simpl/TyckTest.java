@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TyckTest {
+class TyckTest {
     String typeCheck(String filename) throws Exception {
         var program = Interpreter.of(new FileReader(filename));
         var result = program.typeCheck();

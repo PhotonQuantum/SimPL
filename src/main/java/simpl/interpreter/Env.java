@@ -13,6 +13,7 @@ public class Env implements MapView<Symbol, Value> {
 
     public static final Env EMPTY = new Env() {
         @Contract(pure = true)
+        @Override
         public @Nullable Value get(@NotNull Symbol y) {
             return null;
         }
@@ -47,6 +48,7 @@ public class Env implements MapView<Symbol, Value> {
         return new EnvIterator(this);
     }
 
+    @Override
     public Value get(@NotNull Symbol y) {
         assert E != null;
 

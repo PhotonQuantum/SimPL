@@ -7,13 +7,7 @@ import simpl.typing.BoolType;
 import simpl.typing.TypeEnv;
 import simpl.typing.TypeResult;
 
-public class BooleanLiteral extends Expr {
-
-    public final boolean b;
-
-    public BooleanLiteral(boolean b) {
-        this.b = b;
-    }
+public record BooleanLiteral(boolean b) implements Expr {
 
     public String toString() {
         return "" + b;

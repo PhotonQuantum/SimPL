@@ -6,7 +6,7 @@ import simpl.parser.Parser;
 
 import java.io.FileReader;
 
-public class ParserTest {
+class ParserTest {
     @ParameterizedTest
     @ValueSource(strings = {
             "doc/examples/plus.spl",
