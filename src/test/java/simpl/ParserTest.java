@@ -23,6 +23,9 @@ public class ParserTest {
             "doc/examples/pcf.factorial.spl",
             "doc/examples/pcf.fibonacci.spl",
             "doc/examples/pcf.lists.spl",
+            "doc/examples/letpoly.spl",
+            "doc/examples/effect.spl",
+            "doc/examples/stream.spl",
     })
     void mustParse(String filename) throws Exception {
         var inp = new FileReader(filename);

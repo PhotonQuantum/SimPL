@@ -1,0 +1,6 @@
+let stream_sum = rec f => fn n => fn s => if n = 0 then 0 else ((shd s) + (f (n - 1) (stl s))) in
+    let ones = rec f => (1 ;; f) in
+        stream_sum 10 ones
+    end
+end
+(* => 10 *)

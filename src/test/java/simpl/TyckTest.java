@@ -34,7 +34,8 @@ public class TyckTest {
             "doc/examples/pcf.fibonacci.spl:int",
             "doc/examples/pcf.twice.spl:int",
             "doc/examples/letpoly.spl:int",
-            "doc/examples/effect.spl:(int * int)"
+            "doc/examples/effect.spl:(int * int)",
+            "doc/examples/stream.spl:int",
     }, delimiter = ':')
     void mustTyck(String filename, String expected) throws Exception {
         var result = typeCheck(filename);
