@@ -29,7 +29,7 @@ shadowJar {
 dependencies {
     implementation 'de.jflex:cup_runtime:11b-20160615'
     implementation 'org.jetbrains:annotations:23.0.0'
-    implementation 'org.glavo.kala:kala-common:0.38.0'
+    implementation 'org.glavo.kala:kala-common:0.39.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
