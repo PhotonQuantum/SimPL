@@ -1,0 +1,1109 @@
+\documentclass[a4paper]{article}
+\usepackage{fancyvrb}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{minted}
+\usepackage{etoolbox}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\AtBeginEnvironment{minted}{\let\itshape\relax} % disable italics in minted
+
+\title{CS383 Course Project - SimPL Interpreter}
+\author{Yanning Chen\quad519021910103}
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Introduction}
+In this project, it's required to implement an \textit{interpreter} for the programming language SimPL (pronounced \textit{simple}). SimPL is a simplified dialect of ML, which can be used for both \textit{functional} and \textit{imperative} programming. This document presents an overview of this SimPL interpreter and describes basic algorithms and internal designs of this implementation.
+
+\section{Differences with specification}
+
+There are some differences between the specification and this implementation that need to be taken into consideration.
+
+\paragraph{Evaluation strategy} Lazy evaluation is the default strategy for evaluating expressions. When met with side effects, it might yield different outputs from eager evaluation.
+
+To opt out, add \texttt{\{-\# Strict \#-\}} pragma to the top of the program.
+
+\paragraph{Stack size} Due to lazy evaluation, it's easier to overflow the stack.
+
+The default stack size is set to 10240000.
+To set a greater value, add \texttt{\{-\# StackSize=<value> \#-\}} pragma to enlarge the stack.
+
+\paragraph{GC} GC is enabled by default. If memory usage is not a problem, it might be better to disable GC for better performance.
+
+To disable GC, add \texttt{\{-\# GCThreshold=1 \#-\}} pragma to trigger GC only when heap overflow occurs.
+
+\paragraph{Heap Usage} The max heap usage is capped at \texttt{65536} by default.
+
+To increase the limit, add \texttt{\{-\# HeapSize=<value> \#-\}} pragma.
+
+\section{Project Summary}
+
+\subsection{Dependencies}
+\paragraph{JDK 17} Development of this project utilizes \textit{Bellsoft Liberica JDK 17.0.3}. But any JDK compliant with \textit{Java SE 16} is also acceptable.
+\paragraph{Gradle 7.2} This project uses \textit{Gradle} to manage dependencies and build tasks.
+\paragraph{JFlex 1.8.2} \textit{JFlex} is used to generate the lexical analyzer for SimPL.
+\paragraph{CUP 0.11b} \textit{CUP} is used to generate the LALR parser for SimPL.
+\paragraph{Kala Common 0.38.0} \textit{Kala Common} provides modern container and utility classes that is similar to those provided by \textit{Scala}'s standard library.
+\paragraph{JUnit 5.8.2} \textit{JUnit} is used to test the correctness of the implementation.
+
+\subsection{Structure}
+\subsubsection{Parser}
+Package \texttt{simpl.parser} contains lexer and parser for SimPL. It also contains surface \textit{AST} definitions (\texttt{Expr}) for this language.
+
+A complete parser for SimPL has already been provided in the project template.
+The evaluation and typechecking of this language is \textit{syntax-directed}, so most part of the evaluation and typechecking (without unification) algorithm is implemented in the AST module.
+
+\subsubsection{Interpreter}
+Package \texttt{simpl.interpreter} contains CLI, builtin functions, basic execution environments, and core \texttt{Value} types.
+
+Once surface ASTs are typechecked, they are evaluated and converted to \texttt{Value}s. \texttt{Value}s are all \textit{well-typed} terms, while AST \texttt{Expr}s may not.
+
+\subsubsection{Typing}
+
+Package \texttt{simpl.typing} contains type structures and unification algorithm.
+
+Every type, type environment, and substitution are defined in this package. The unification algorithm is implemented in these classes. Combined with the AST module, this package provides type inference and type checking functionality of SimPL.
+
+\section{Typing}
+
+SimPL uses \textit{Hindley-Milner} type system. It is \textit{STLC} with \textit{prenex polymorphism}, and its type inference is deterministic. Therefore, SimPL doesn't have explicit type annotation, and typing is completely handled by \textit{principle type inference}.
+
+This section will introduce the implementation of its type definition and type inference algorithm.
+
+\subsection{Basic structs}
+
+\subsubsection{Type Scheme}
+
+Hindley-Milner type system has \textit{let-polymorphism}. To achieve this, a limited $\forall$ quantifier is added to the type system. Different from \textit{System-F}, $\forall$ is only allowed to appear in the foremost position of a type scheme, i.e. it must be in \textit{prenex normal form}.
+
+Here we define type schemes as follows:
+\begin{align*}
+    \sigma ::= & \ \tau                      \\
+               & | (\forall\ \alpha\ \sigma)
+\end{align*}
+
+In the implementation, all type schemes implements the \texttt{TypeScheme} interface, and
+it has two kinds of implementations, \texttt{Type} interface and \texttt{Forall}.
+\begin{minted}[mathescape, escapeinside=||, linenos, fontsize=\small\ttfamily]{java}
+public interface TypeScheme {
+    /**
+     * Replace a type variable with a type.
+     *
+     * @param a the type variable to replace.
+     * @param t the type to replace the type variable with.
+     * @return the type scheme after replace.
+     */
+    TypeScheme replace(TypeVar a, Type t);
+
+    /**
+     * Instantiate this type scheme.
+     *
+     * @return the instantiated type.
+     */
+    Type instantiate();
+}
+
+public record Forall(TypeVar a, TypeScheme s) implements TypeScheme { |\dots| }
+\end{minted}
+
+\subsubsection{Type}
+
+All types implement \texttt{Type} interface, which extends \texttt{TypeScheme} interface. \texttt{Type} provides a common interface for all types, including unification, generization, collecting free variables, etc.
+
+\begin{minted}[mathescape, escapeinside=||, linenos, fontsize=\small\ttfamily]{java}
+public interface Type extends TypeScheme {
+    // NIL and UNIT are moved to `NilValue.INSTANCE` and `UnitValue.INSTANCE` to avoid vm deadlock.
+    // See https://bugs.openjdk.java.net/browse/JDK-6301579.
+
+    /**
+     * Determine the equality decidability.
+     *
+     * @return true if this type is equality type, otherwise false.
+     */
+    boolean isEqualityType();
+
+    /**
+     * Check occurrence of a specific type variable.
+     *
+     * @param tv the type variable to check.
+     * @return true if this type contains the specified type variable, otherwise false.
+     */
+    boolean contains(TypeVar tv);
+
+    /**
+     * Unify this type with another type.
+     *
+     * @param t the other type to unify with.
+     * @return the substitution that makes this type equal to the other type.
+     * @throws TypeError if the unification fails.
+     */
+    Substitution unify(Type t) throws TypeError;
+
+    /**
+     * Replace a type variable with a type.
+     *
+     * @param a the type variable to replace.
+     * @param t the type to replace the type variable with.
+     * @return the type after replace.
+     */
+    @Override
+    Type replace(TypeVar a, Type t);
+
+    /**
+     * Collect all free type variables in this type.
+     *
+     * @return the set of free type variables.
+     */
+    ImmutableSet<TypeVar> freeTypeVars();
+
+    /**
+     * Generalize all free type variables in this type.
+     *
+     * @param E the type environment to generalize under.
+     * @return the generalized type scheme.
+     */
+    default TypeScheme generalizeWith(@NotNull TypeEnv E) { |\dots| }
+
+    /**
+     * Instantiate this type scheme.
+     *
+     * @return the instantiated type.
+     */
+    @Override
+    default Type instantiate() { |\dots| }
+}
+\end{minted}
+
+\subsubsection{Substitution}
+
+For convenience, the substitution info is stored like a tree. It is implemented as \texttt{Substitution} interface, and it has three implementations.
+Apply a substitution (on a type scheme) is generally a DFS traversal.
+
+\paragraph{Identity} The identity substitution.
+\paragraph{Replace} The substitution that replaces a type variable with a type.
+\paragraph{Compose} The substitution that composes two substitutions.
+
+\begin{minted}[mathescape, escapeinside=||, linenos, fontsize=\small\ttfamily]{java}
+public interface Substitution {
+
+    Substitution IDENTITY = new Identity();
+
+    <T extends TypeScheme> T applyOn(T t);
+
+    default TypeEnv applyOn(final TypeEnv E) { |\dots| }
+    |\dots|
+    final class Identity extends Substitution { 
+        |\dots|
+        @Override
+        public <T extends TypeScheme> T applyOn(T t) {
+            return t;
+        }
+    }
+
+    final class Replace extends Substitution {
+        private final TypeVar a;
+        private final Type t;
+        |\dots|
+        @Override
+        public <T extends TypeScheme> T applyOn(@NotNull T b) {
+            return (T) b.replace(a, t);
+        }
+    }
+
+    final class Compose extends Substitution {
+        private final Substitution f;
+        private final Substitution g;
+        |\dots|
+        @Override
+        public <T extends TypeScheme> T applyOn(T t) {
+            return f.applyOn(g.applyOn(t));
+        }
+    }
+}
+\end{minted}
+
+\subsubsection{Type Environment}
+
+Type environment is a mapping from type variables to type schemes.
+\begin{align*}
+    \Gamma ::= & \ \boldsymbol{\cdot} \\
+               & | \Gamma, x: \sigma
+\end{align*}
+
+It's stored as a cons list.
+
+\begin{minted}[mathescape, escapeinside=||, linenos, fontsize=\small\ttfamily]{java}
+public class TypeEnv {
+    public static final TypeEnv DEFAULT = withBuiltIns();
+    protected final Symbol x;
+    protected final TypeScheme t;
+    private final TypeEnv E;
+
+    public TypeScheme get(Symbol x) { |\dots| }
+
+    public ImmutableSet<Symbol> typeVars() { |\dots| }
+}
+\end{minted}
+
+\subsection{Type inference}
+
+Given the definition of type scheme, substitution and unification, we may now implement the type inference algorithm.
+
+Notice that there are generally two styles of type inference algorithms: algorithm W/J and constraints generation. Basically, the former mixes constraint generation and solving, and the latter first collect contraints by bottom-up traversal, which will be solved independently.
+
+In the lecture, the latter approach is taken. It makes extension to type system easier. However, in this implementation, algorithm W is used. In algorithm W, constraints are solved immediately when they are generated, and are not solved independently. Therefore, we need to modify the unification algorithm a bit to make it work.
+
+\subsubsection{Unification}
+
+\[
+    \frac{}{\alpha \sim \alpha \leadsto \boldsymbol{\cdot}}U_{same} \quad
+    \frac{\alpha \notin FV(\tau)}{\alpha \sim \tau \leadsto [\tau/\alpha]}U_{left} \quad
+    \frac{\alpha \sim \tau \leadsto S}{\tau \sim \alpha \leadsto S}U_{right}
+\]
+
+\[
+    \frac{}{int \sim int \leadsto \boldsymbol{\cdot}}U_{int} \quad
+    \frac{}{bool \sim bool \leadsto \boldsymbol{\cdot}}U_{bool}
+\]
+
+\[
+    \frac{
+        \begin{array}{c}
+            \tau_{11} \sim \tau_{21} \leadsto S_1 \\
+            S_1\tau_{12} \sim S_1\tau_{22} \leadsto S_2
+        \end{array}
+    }
+    {(\tau_{11} \to \tau_{12}) \sim (\tau_{21} \to \tau_{22}) \leadsto S_2 \circ S_1}
+    U_{arrow}
+\]
+
+\begin{center}
+    (Remaining cases are omitted and can be found in the source code.)
+\end{center}
+
+Notice how $U_{arr}$ is different from the one given in the lecture. After unifying $\tau_{11}$ and $\tau_{21}$ producing a substitution $S$, $S$ is applied to $\tau_{12}$ and $\tau_{22}$ before unifying them, in order to propagate the substitution collected. This is not needed in constraint generation based inference because if solving is deferred, substituting a variable in the whole $(S, c)$ set is enough to propagate the information.
+
+To elaborate, the following code implements the unification algorithm for \texttt{ArrowType}.
+
+\begin{minted}[mathescape, escapeinside=||, linenos, fontsize=\small\ttfamily]{java}
+    @Override
+    public Substitution unify(Type t) throws TypeError {
+        try {
+            if (t instanceof ArrowType rhs) {
+                var S1 = t1.unify(rhs.t1);
+                var S2 = S1.applyOn(t2).unify(S1.applyOn(rhs.t2));
+
+                return S2.compose(S1);          // U_arrow
+            } else if (t instanceof TypeVar) {
+                return t.unify(this);           // U_right
+            }
+        } catch (TypeError e) {
+            e.appendTrace(this, t);             // append unify trace for debugging
+            throw e;                            // rethrow the exception
+        }
+
+        throw new TypeMismatchError(this, t);
+    }
+\end{minted}
+
+\subsubsection{Let-polymorphism}
+
+To deal with $\forall$ quantifier, there are two additional initial rules for typing that is not syntax-directed and is not mentioned in the specification.
+
+\[
+    \frac{\Gamma \vdash e: (\forall\ \alpha\ \sigma)}{\Gamma \vdash e: \sigma[\tau/\alpha]}T_{inst}
+    \quad
+    \frac{\Gamma \vdash e: \sigma \quad \alpha \in FV(\Gamma)}{\Gamma \vdash e: (\forall\ \alpha\ \sigma)}T_{gen}
+\]
+
+A type scheme can be instantiated by replacing its bound variable with a concrete type.
+Also, any type variable of a type scheme that is free in the type environment can be generalized with $\forall$ quantifier, because they are unconstrained.
+
+The recursive type scheme instantiate method is implemented as follows.
+This method is referred as \texttt{inst(type)} later.
+
+\begin{minted}[mathescape, escapeinside=||, linenos, fontsize=\small\ttfamily]{java}
+public record Forall(TypeVar a, TypeScheme s) implements TypeScheme {
+    @Override
+    public Type instantiate() {
+        return s.replace(a, new TypeVar(true)).instantiate();
+    }
+}
+public interface Type extends TypeScheme {
+    @Override
+    public Type instantiate() {
+        return this;
+    }
+}
+\end{minted}
+
+And the type generalization method is implemented as follows.
+This method is referred as \texttt{gen(type, Env)} later.
+
+\begin{minted}[mathescape, escapeinside=||, linenos, fontsize=\small\ttfamily]{java}
+public interface Type extends TypeScheme {
+    /**
+     * Generalize all free type variables in this type.
+     *
+     * @param E the type environment to generalize under.
+     * @return the generalized type scheme.
+     */
+    default TypeScheme generalizeWith(@NotNull TypeEnv E) {
+        var tFreeVars = freeTypeVars();
+        var eBoundVars = E.typeVars();
+
+        var genVars = tFreeVars.view().filterNot(v -> eBoundVars.contains(v.name))
+                               .collect(ImmutableCompactSet.factory());
+
+        return genVars.foldLeft((TypeScheme) this, (acc, a) -> new Forall(a, acc));
+    }
+}
+\end{minted}
+
+\subsubsection{Algorithm W}
+
+Let $W(\Gamma; x) = (S; \tau)$ be type checking expression $x$ under the type environment $E$, returning substitution $S$ and type $\tau$.
+
+\[
+    \frac{\tau = inst(\Gamma(x))}{W(\Gamma; x) = (\cdot; \tau)}W_{var}
+\]
+
+\[
+    \frac{
+        \begin{array}{c}
+            W(\Gamma; e_1)=(S_1;\tau_1)       \\
+            \sigma = gen(\tau_1, S_1\ \Gamma) \\
+            W(S_1\ \Gamma, x:\sigma;e_2) = (S_2;\tau_2)
+        \end{array}
+    }
+    {W(\Gamma; let\ x = e_1\ in\ e_2) = (S_2 \circ S_1; \tau_2)}W_{let}
+\]
+
+\[
+    \frac{W(\Gamma, x:\alpha; e) \vdash (S; \tau)}{W(\Gamma; (\lambda x.e)) = (S; (S\ \alpha) \to \tau)}W_{abs}
+\]
+
+\[
+    \frac{
+        \begin{array}{c}
+            W(\Gamma; l)=(S_1;\tau_1)           \\
+            W(S_1 \circ \Gamma; r)=(S_2;\tau_2) \\
+            S_2\ \tau_1 \sim (\tau_2 \to \alpha) \leadsto S_3
+        \end{array}
+    }
+    {W(\Gamma; l\ r) = (S_3 \circ S_2 \circ S_1; S_3\ \alpha)}W_{app}
+\]
+
+\[
+    \frac{}{W(\Gamma; true) = (\cdot; bool)}W_{true} \quad
+    \frac{}{W(\Gamma; false) = (\cdot; bool)}W_{false}
+\]
+
+\[
+    \frac{
+        \begin{array}{c}
+            W(\Gamma; l) = (S_1; \tau_1)           \\
+            W(S_1 \circ \Gamma; r) = (S_2; \tau_2) \\
+            S_2\ \tau_1 \sim \tau_2 \leadsto S_3   \\
+            eqType (S_3 \circ S_2\ \tau_1)         \\
+            eqType (S_3\ \tau_2)                   \\
+        \end{array}
+    }{W(\Gamma; l\ r) = (S_3 \circ S_2 \circ S_1; bool)}W_{eq}
+\]
+
+\[
+    \frac{
+        \begin{array}{c}
+            W(\Gamma; e_1) = (S_1; \tau_1)                \\
+            W(S_1\ \Gamma; e_2) = (S_2; \tau_2)           \\
+            W(S_2 \circ S_1\ \Gamma; e_3) = (S_3; \tau_3) \\
+            S_3 \circ S_2\ \tau_1 \sim bool \leadsto S_4  \\
+            S_4 \circ S_3\ \tau_2 \sim S_4\ \tau_3 \leadsto S_5
+        \end{array}
+    }{W(\Gamma; if\ e_1\ then\ e_2\ else\ e_3) = (S_5 \circ S_4 \circ S_3 \circ S_2 \circ S_1; S_5 \circ S_4\ \tau_3)}W_{if}
+\]
+
+\begin{center}
+    (Remaining cases are omitted and can be found in the source code.)
+\end{center}
+
+Note that to type check a variable, the type scheme must be instantiated after seeking it in the type environment. For the let binding, $e_1$ is generalized with respect to the type environment, then it is added to the type environment when checking $e_2$.
+
+Similar to the modified unification algorithm, substitutions must be applied to any types or environments existed before that substitution was created.
+
+To elaborate, the following code implements the type checking algorithm for let binding.
+
+\begin{minted}[mathescape, escapeinside=||, linenos, fontsize=\small\ttfamily]{java}
+public record Let(Symbol x, Expr e1, Expr e2, Boolean strict) implements Expr {
+    @Override
+    public TypeResult typeCheck(TypeEnv E) throws TypeError {
+        var W1 = e1.typeCheck(E);
+        var s = W1.ty().generalizeWith(W1.subst().applyOn(E));
+        var W2 = e2.typeCheck(TypeEnv.of(W1.subst().applyOn(E), x, s));
+        return TypeResult.of(W2.subst().compose(W1.subst()), W2.ty());
+    }
+}
+\end{minted}
+
+Algorithm W is sound and complete\footnote{Milner, Robin (1978). ``A Theory of Type Polymorphism in Programming".}.
+
+\section{Evaluation}
+
+\subsection{State}
+
+A state $s \in \textbf{State}$ is a triple $(E, M, c)$ where $E \in \textbf{Env}$ is the environment, $E \in \textbf{Mem}$ is the memory, and $c$ is the global config.
+
+\subsubsection{Environment}
+
+Environment $E$ is a mapping from names to values. Environments can be queried for a value by name, extended by adding new bindings, and composed with another environment. However, updating an existing binding is not allowed.
+
+\begin{minted}[mathescape, escapeinside=||, linenos, fontsize=\small\ttfamily]{java}
+public class Env implements MapView<Symbol, Value> {
+    public static final Env EMPTY = |\dots|;
+    private final Env E;
+    private final Symbol x;
+    private final Value v;
+    |\dots|
+    @Contract(value = "_, _, _ -> new", pure = true)
+    public static @NotNull Env of(Env E, Symbol x, Value v) { |\dots| }
+
+    public @NotNull Env extend(Symbol x, Value v) { |\dots| }
+
+    @Override
+    public @NotNull MapIterator<Symbol, Value> iterator() { |\dots| }
+
+    public Value get(@NotNull Symbol y) { |\dots| }
+}
+\end{minted}
+
+\subsubsection{Memory}
+
+Memory $M$ is a mapping from $\mathbb{N}$ to values. However, most interfaces of a map is not exposed. A cell can be allocated from it to hold a value, which is barely a reference to the memory and an index. It can be used to read/write a memory location. Manual deallocation is not allowed. GC is dicussed later in this document.
+
+For efficiency, memory is implemented as a continuous vector.
+
+\begin{minted}[mathescape, escapeinside=||, linenos, fontsize=\small\ttfamily]{java}
+public class Mem {
+    private final MutableCell<MutableList<Value>> storage = |\dots|;
+
+    public Cell allocate(@NotNull State s, Value initialValue) throws RuntimeError { |\dots| }
+
+    public static class Cell {
+        protected final MutableCell<MutableList<Value>> storage;
+        protected final MutableCell<Integer> pointer;
+
+        public Value get() { |\dots| }
+
+        public void set(Value v) { |\dots| }
+
+        @Override
+        public boolean equals(Object o) { |\dots| }
+    }
+
+}
+\end{minted}
+
+Note that \texttt{MutableCell} is an auxiliary class for interior mutability. It's basically an \texttt{AtomicCell} without thread safety.
+
+\subsubsection{Global Config}
+
+Config $c$ is an object that contains the configuration for this execution. It stores immutable information such as allowed stack/heap usage, default evaluation strategy, gc strategy, and so on.
+
+\begin{minted}[mathescape, escapeinside=||, linenos, fontsize=\small\ttfamily]{java}
+public record Config(Boolean strict, Float gcThreshold, Integer stackSize, Integer heapSize) {|\dots|}
+\end{minted}
+
+\subsection{Value}
+\texttt{Value} corresponds to $value$ in big-step semantics of the language. It has a method to determine semantics equivalence with another value.
+
+\begin{minted}[mathescape, escapeinside=||, linenos, fontsize=\small\ttfamily]{java}
+public sealed interface Value permits BoolValue, ConsValue, FunValue, IntValue, NilValue, 
+        PairValue, RecValue, RefValue, StreamValue, ThunkValue, UnitValue {
+
+    boolean equals(State s, Value other) throws RuntimeError;
+    |\dots|
+}
+\end{minted}
+
+\subsection{Expr}
+\texttt{Expr} is a parse tree of a \textit{SimPL} program, and also a term that is not yet typechecked or evaluated. Both can be done by calling \texttt{typeCheck} or \texttt{eval} respectively.
+
+\begin{minted}[mathescape, escapeinside=||, linenos, fontsize=\small\ttfamily]{java}
+public interface Expr extends EntryPoint {
+    /**
+     * Type check this expression.
+     *
+     * @param E The type environment.
+     * @return Constraints and type of this expression.
+     * @throws TypeError If this expression is ill-typed.
+     */
+    TypeResult typeCheck(TypeEnv E) throws TypeError;
+
+    /**
+     * Evaluate this expression in the given state.
+     *
+     * @param s The state to evaluate in.
+     * @return The value of this expression.
+     * @throws RuntimeError If this expression cannot be evaluated.
+     */
+    Value eval(State s) throws RuntimeError;
+    |\dots|
+}
+\end{minted}
+
+\subsection{Call-by-value evaluation}
+
+Call-by-value evaluation is implemented following the specification. The implementation of $add$ is shown here for illustration.
+
+\begin{minted}[mathescape, escapeinside=||, linenos, fontsize=\small\ttfamily]{java}
+public class Add extends ArithExpr {
+    |\dots|
+    @Override
+    public Value eval(State s) throws RuntimeError {
+        // E-Add.
+        if (l.eval(s) instanceof IntValue lhs) {
+            if (r.eval(s) instanceof IntValue rhs) {
+                return new IntValue(lhs.n() + rhs.n());
+            }
+            throw new RuntimeError(r + " is not an integer");
+        }
+        throw new RuntimeError(l + " is not an integer");
+    }
+}
+\end{minted}
+
+More details can be found in the source code.
+
+\subsection{Semantics equivalence}
+
+Semantics equivalence check is implemented following the specification. The implementation of $cons$ is shown here for illustration.
+
+\begin{minted}[mathescape, escapeinside=||, linenos, fontsize=\small\ttfamily]{java}
+public record ConsValue(@NotNull Value v1, @NotNull Value v2) implements Value {
+    |\dots|
+    @Override
+    public boolean equals(State s, Value o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        ConsValue consValue = (ConsValue) o;
+        return v1.equals(consValue.v1) && v2.equals(consValue.v2);
+    }
+}
+\end{minted}
+
+More details can be found in the source code.
+
+\section{Predefined functions}
+
+There are 7 predefined functions: \texttt{fst}, \texttt{snd}, \texttt{hd}, \texttt{tl}, \texttt{isZero}, \texttt{pred}, and \texttt{succ}.
+
+\subsection{Semantics}
+
+All functions are defined as \texttt{FunValue}s. Two approaches are used to implement these functions.
+
+For \texttt{isZero}, \texttt{pred} and \texttt{succ}, they can be defined in theory level.
+
+Take \texttt{succ} as an example: it can be defined as $\lambda x.x+1$. So the implementation goes by
+manually converting the value to \textit{AST}.
+
+\begin{minted}[mathescape, escapeinside=||, linenos, fontsize=\small\ttfamily]{java}
+public class Succ extends FunValue {
+    public static final FunValue INSTANCE = new Succ();
+
+    private Succ() {
+        super(Env.EMPTY, Symbol.of("x"), new Add(new Name(Symbol.of("x")), new IntegerLiteral(1)));
+    }
+}
+\end{minted}
+
+For the rest functions, they can only be implemented in meta-theory level,
+because there's no pattern matching or eliminators in our language.
+To consume a $list$ or $pair$, direct \textit{AST} inspection is needed.
+
+Take \texttt{fst} as an example:
+
+\begin{minted}[mathescape, escapeinside=||, linenos, fontsize=\small\ttfamily]{java}
+public class Fst extends FunValue {
+    public static final FunValue INSTANCE = new Fst();
+
+    private Fst() {
+        super(Env.EMPTY, Symbol.of("x"), new Expr() {
+            @Override
+            public TypeResult typeCheck(TypeEnv E) { return null; }
+
+            @Override
+            public Value eval(State s) throws RuntimeError {
+                var x = new Name(Symbol.of("x")).eval(s);
+                if (x instanceof PairValue pair) {
+                    return pair.v1();
+                }
+                throw new RuntimeError(x + " is not a pair");
+            }
+        });
+    }
+}
+\end{minted}
+
+The predefined functions are inserted into the initial environment.
+
+\begin{minted}[mathescape, escapeinside=||, linenos, fontsize=\small\ttfamily]{java}
+public class State {
+    public static final Env initialEnv =
+            Env.EMPTY.extend(Symbol.of("fst"), Fst.INSTANCE)
+                    .extend(Symbol.of("snd"), Tl.INSTANCE)
+                    |\dots|
+                    .extend(Symbol.of("succ"), Succ.INSTANCE);
+    |\dots|
+    public static @NotNull State create(Config c) {
+        var E = initialEnv;
+        |\dots|
+        return State.of(E, M, c);
+    }
+}
+\end{minted}
+
+\subsection{Typing}
+
+The types of the predefined functions are hard-coded into the initial typing environment.
+For sake of let polymorphism, all arrow types are generalized with $\forall$ quantifier.
+
+\begin{minted}[mathescape, escapeinside=||, linenos, fontsize=\small\ttfamily]{java}
+public class TypeEnv {
+    public static final TypeEnv DEFAULT = withBuiltIns();
+    private static TypeEnv withBuiltIns() {
+        var tyFst = new TypeVar(true);
+        var tySnd = new TypeVar(true);
+        |\dots|
+        var defaultTypes = ImmutableSeq.of(
+                // fst: t1 × t2 → t1
+                Tuple.of(Symbol.of("fst"), ArrowType.of(PairType.of(tyFst, new TypeVar(true)), tyFst)),
+                // snd: t1 × t2 → t2
+                Tuple.of(Symbol.of("snd"), ArrowType.of(PairType.of(new TypeVar(true), tySnd), tySnd)),
+                |\dots|
+                // pred: int → int
+                Tuple.of(Symbol.of("pred"), ArrowType.of(IntType.INSTANCE, IntType.INSTANCE))
+        );
+
+        return defaultTypes.foldLeft(new TypeEnv(),
+            (E, symTy) -> TypeEnv.of(E, symTy._1, symTy._2.generalizeWith(E))
+        );
+    }
+}
+public class Interpreter {
+    |\dots|
+    public Type typeCheck() throws TypeError {
+        return program.typeCheck(TypeEnv.DEFAULT).ty();
+    }
+}
+\end{minted}
+
+\section{Additional features}
+
+\subsection{Pragma}
+
+This implementation of \texttt{SimPL} supports pragma. A pragma is a special instruction placed in the beginning of the source code that can be used to modify the behavior of the runtime.
+
+For example, these are valid pragmas:
+
+\texttt{\{-\# GCThreshold=1024 \#-\}}
+
+\texttt{\{-\# Strict MaxStack=10240000 \#-\}}
+
+To implement this feature, a new interface is introduced:
+
+\begin{minted}[mathescape, escapeinside=||, linenos, fontsize=\small\ttfamily]{java}
+public interface EntryPoint {
+    /**
+     * @return pragmas for this entry point
+     */
+    ImmutableMap<String, String> pragmas();
+
+    /**
+     * @return body of this entry point
+     */
+    Expr expr();
+}
+
+public interface Expr extends EntryPoint { |\dots| }
+public record Pragma(String pragma, String value, EntryPoint next) implements EntryPoint { |\dots| }
+\end{minted}
+
+A new lexing state \texttt{YYPRAGMA} is added to the lexer to parse pragma.
+
+\begin{Verbatim}[numbers=left]
+    <YYINITIAL> {
+    "{-#" { yybegin(YYPRAGMA); }
+    "#-}" {
+    throw new SyntaxError("Pragma mismatch, extra #-} found", yyline, yycolumn);
+    }
+    ...
+    }
+    <YYPRAGMA> {
+    "{-#" { throw new SyntaxError("Nested pragma is not allowed", yyline, yycolumn); }
+    "#-}" { yybegin(YYINITIAL); }
+    "="   { return token(EQ); }
+
+    {Alphanumeric} { return token(STRING, yytext()); }
+    {Whitespace}   { /* skip */ }
+
+    [^] { throw new SyntaxError("Illegal character " + yytext(), yyline, yycolumn); }
+    }
+\end{Verbatim}
+
+And a new parsing mode is added to the parser.
+
+\begin{Verbatim}[numbers=left]
+    non terminal EntryPoint p;
+    non terminal Expr e;
+
+    start with p;
+
+    p ::= STRING:x p:e {: RESULT = new Pragma(x, null, e); :}
+    | STRING:x EQ STRING:v p:e {: RESULT = new Pragma(x, v, e); :}
+    | e:e {: RESULT = e; :}
+    ;
+
+    e ::= ...
+\end{Verbatim}
+
+All supported pragmas are:
+
+\paragraph{Strict} Enable global strict evaluation.
+\paragraph{MaxStack} Set the maximum stack size.
+\paragraph{MaxHeap} Set the maximum allowed heap objects.
+\paragraph{GCThreshold} Set the garbage collection threshold.
+
+\subsection{Lazy evaluation}
+
+According to Haskell specification, lazy evaluation is \textit{call-by-name}\footnote{Call by name is an evaluation strategy where the arguments to a function are not evaluated before the function is called.} plus \textit{sharing}\footnote{Sharing means that temporary data is physically stored, if it is used multiple times.}, i.e. \textit{call-by-need}.  The main idea of lazy evaluation is to only evaluate an operand when needed.
+
+Lazy evaluation is implemented using \texttt{ThunkValue}, a closure with unit argument. When let-binding an expression, or applying one to a function (during $\beta$-reduction), it doesn't need to be evaluated immediately, and is \textit{delayed}, which means capturing the current environment and storing both in a thunk. When the value is really needed (queried from the environment, or being determined its semantics equivalence with another value), it is \textit{forced}, which means evaluating the expression with the captured environment.
+
+\begin{minted}[mathescape, escapeinside=__, linenos, fontsize=\small\ttfamily]{java}
+public record Let(Symbol x, Expr e1, Expr e2, Boolean strict) implements Expr {
+    _\dots_
+    @Override
+    public Value eval(@NotNull State s) throws RuntimeError {
+        Value v1;
+        if (strict || s.config.strict()) {
+            v1 = e1.eval(s);
+        } else {
+            v1 = ThunkValue.delay(s.E, e1);
+        }
+
+        return e2.eval(State.of(s.E.extend(x, v1), s.M, s.config));
+    }
+}
+\end{minted}
+
+\begin{minted}[mathescape, escapeinside=||, linenos, fontsize=\small\ttfamily]{java}
+public record Name(Symbol x) implements Expr {
+    |\dots|
+    @Override
+    public Value eval(@NotNull State s) throws RuntimeError {
+        var v = s.E.get(x);
+        |\dots|
+        if (v instanceof ThunkValue thunk) {
+            v = thunk.force(s);
+        }
+        |\dots|
+    }
+}
+\end{minted}
+
+To avoid evaluating an expression multiple times, sharing is implemented by caching the result of evaluation in \texttt{ThunkValue}.
+
+\begin{minted}[mathescape, escapeinside=||, linenos, fontsize=\small\ttfamily]{java}
+public final class ThunkValue implements Value {
+    public final Env E;
+    public final Expr e;
+    public Value cachedValue = null;
+
+    @Contract("_, _ -> new")
+    public static @NotNull ThunkValue delay(Env E, Expr e) {
+        return new ThunkValue(E, e);
+    }
+
+    public Value force(State s) throws RuntimeError {
+        if (cachedValue == null) {
+            cachedValue = e.eval(State.of(E, s.M, s.config));
+        }
+        return cachedValue;
+    }
+
+    @Override
+    public boolean equals(State s, Value o) throws RuntimeError {
+        var v = force(s);
+        return v.equals(s, o);
+    }
+}
+\end{minted}
+
+Beware that call-by-need evaluation has a different semantics from call-by-value evaluation if the language has side effects, which unfortunately is the case in \textit{SimPL} (because of reference). The following machenism allows a user to opt out of lazy evaluation temporarily.
+
+\paragraph{Function application} Writing \texttt{f @x} forces the evaluation of \texttt{x} before calling \texttt{f}.
+\paragraph{Let-binding} Writing \texttt{let @x = a in e} forces the evaluation of \texttt{a} before binding \texttt{x} to \texttt{a} in \texttt{e}.\mbox{}\\
+
+And if strict semantics is expected globally, \texttt{\{-\# Strict -\#\}} pragma can be used to disable lazy evaluation completely in this program.
+
+The following example illustrates the difference of semantics between lazy and strict evaluation.
+
+\begin{minted}[mathescape, escapeinside=||, linenos, fontsize=\small\ttfamily]{ocaml}
+(let a = ref 0 in
+    let b = a := !a + 1; a in   (* lazy *)
+        !a
+    end
+end,
+let a = ref 0 in
+    let @b = a := !a + 1; a in  (* strict *)
+        !a
+    end
+end)
+(* ==> pair@0@1 *)
+\end{minted}
+
+Notice that there are side effects in both let bindings. The first let-binding is lazy, so the side effect is not executed.
+
+Another cons of lazy evaluation is that it deepens the stack when interpreting a program. This might cause stack overflow.
+
+To let tests pass, default stack size is increased to 10240000.
+
+\subsection{Infinite Stream}
+
+An infinite stream is an infinite sequence of values, or basically a lazy list.
+Consider a stream of element type $\tau$. It has one constructor: \texttt{SCons} of type $\tau \to (\tau\ stream) \to (\tau\ stream)$.
+
+Unfortunately, it's an infinite type, and evaluating it by call-by-value strategy will not terminate.
+To solve this problem, \texttt{ThunkValue} is used to defer the evaluation of the second argument of \texttt{SCons}.
+After wrapping it in a \texttt{ThunkValue}, it's equivalent to $\tau \to (() \to \tau\ stream) \to \tau\ stream$ with call-by-need.
+
+\subsubsection{Syntax}
+
+Just like \texttt{hd::tl} for list, \texttt{hd;;tl} is the stream constructor.
+Lexical and syntactic definitions are updated accordingly.
+
+\begin{Verbatim}
+    ";;" { return token(SCONS); }
+\end{Verbatim}
+
+\begin{Verbatim}
+    terminal CONS, SCONS, UNIT, ARROW;
+    precedence right CONS, SCONS;
+
+    e ::= ...
+    | e:l SCONS e:r {: RESULT = new SCons(l, r); :}
+\end{Verbatim}
+
+\subsubsection{Typing}
+\[
+    \frac{\Gamma \vdash e_1: \tau \quad \Gamma \vdash e_2: \tau\ stream}{\Gamma \vdash e_1;;e_2: stream\ \tau}T_{Stream}
+\]
+
+\subsubsection{Semantics}
+
+\[
+    \frac{E,M;e_1 \Downarrow M'; v_1}{E,M;(e_1;;e_2) \Downarrow M'; (stream\ v_1\ (thunk\ e_2))}E_{SCons}
+\]
+
+\subsubsection{Predefined functions}
+
+Two predefined functions are introduced to eliminate a stream.
+
+\begin{align*}
+    \textbf{shd}                              & : \tau\ stream -> \tau                        \\
+    \textbf{stl}                              & : \tau\ stream -> \tau\ stream                \\
+    \textbf{shd}\ (stream\ v_1\ (thunk\ e_2)) & = v_1                                         \\
+    \textbf{stl}\ (stream\ v_1\ (thunk\ e_2)) & = v_2 \quad \text{($e_2$ evaluates to $v_2$)} \\
+\end{align*}
+
+\subsubsection{Example}
+
+The following program generates a stream of `1's, take first 10 of them and add them up.
+
+\begin{minted}[mathescape, escapeinside=||, linenos, fontsize=\small\ttfamily]{ocaml}
+let stream_sum = rec f => fn n => fn s => if n = 0 then 0 else ((shd s) + (f (n - 1) (stl s))) in
+    let ones = rec f => (1 ;; f) in
+        stream_sum 10 ones
+    end
+end
+(* => 10 *)
+\end{minted}
+
+\subsection{Garbage Collection}
+
+\textit{SimPL} has heap-allocated \textit{reference} values. In this implementation, all values on heap are contained in a \texttt{Cell}. A cell is considered \textit{reachable} if it's a \texttt{RefValue}, or it's in the \textit{sharing cache} of a forced \texttt{ThunkValue} in the environment.
+
+A stop-the-world garbage collection machenism is implemented in this interpreter. It retrieves all cells that are not reachable from the environment of current state. This is done by \textit{copy collection}.
+When allocating a new \texttt{Cell}, current heap size is checked. If heap usage is over the threshold, reachable \texttt{Cell}s are copied to a new heap, and the old heap is freed.
+
+For better performance, all \texttt{Cell}s share the same storage, which is a \texttt{MutableArray}, i.e. \texttt{vector} in C++. A \texttt{Cell} contains a reference to the global storage, and an index to the specific value. When gc happens, both the storage reference and the index may be changed, so they are wrapped in \texttt{MutableCell}s.
+
+Special care is taken to ensure that garbage collection works for \texttt{ThunkValue}s.
+When evaluating a \texttt{ThunkValue}, the captured environment is active, and the original one is not. However, we should not collect any \texttt{Cell}s that are in the original environment because they might be used later. To achieve this, a stack of root environments is maintained. The environment is pushed into \texttt{root} when it is entered, and pop when exit.
+
+\begin{minted}[mathescape, escapeinside=||, linenos, fontsize=\small\ttfamily]{java}
+public class Mem {
+    private final MutableCell<MutableList<Value>> storage = MutableCell.of(MutableList.create());
+    private final MutableStack<Env> roots = MutableStack.create();
+
+    public static class Cell {
+        protected final MutableCell<MutableList<Value>> storage;
+        protected final MutableCell<Integer> pointer;
+        |\dots|
+    }
+    |\dots|
+    /**
+     * Perform copy garbage collection.
+     */
+    public void gc() {
+        System.err.println("[GC] Starting GC. Before: " + storage.get().size() + " objects.");
+
+        // Scan for cells that are reachable from the root.
+        var reachable = roots.view()
+                .flatMap(E -> E.valuesView().flatMap(CheckedFunction.of(Value::collectRefValues)))
+                .collect(ImmutableCompactSet.factory())
+                .toImmutableSeq();
+        // Copy reachable cells to a new heap.
+        var newStorage = MutableList.from(reachable.view().map(Cell::get));
+        // Update the storage and index of all cells.
+        reachable.view().forEachIndexed((i, v) -> {
+            v.storage.set(newStorage);
+            v.pointer.set(i);
+        });
+
+        System.err.println("[GC] After: " + newStorage.size() + " objects.");
+        storage.set(newStorage);
+    }
+}
+\end{minted}
+
+Two pragmas are added to configure heap and gc behavior. \texttt{MaxHeap} decides the upper limit of heap cells, and \texttt{GCThreshold} is the lowest heap usage rate that may trigger a gc. The default GC threshold is 70\%.
+
+The following program is an example of how gc works in action.
+
+\begin{minted}[mathescape, escapeinside=||, linenos, fontsize=\small\ttfamily]{ocaml}
+{-# HeapSize=4 #-}
+let a = ref 0 in
+    let b = ref 1 in
+        a := !a + !b;
+        let c = ref 2 in
+            a := !a + !c;
+            let d = ref 6 in
+                a := !a + !d
+            end
+        end
+    end;
+    let e = ref 3 in
+        a := !a + !e
+    end;
+    let f = ref 4 in
+        a := !a + !f
+    end;
+    let g = ref 5 in
+        a := !a + !g
+    end;
+    !a
+end
+(* => 21 *)
+\end{minted}
+
+Heap debug log is as follows:
+
+\begin{Verbatim}
+Allocating ref 0 = 0 got cell 0
+Allocating ref 1 = 1 got cell 1
+Allocating ref 2 = 2 got cell 2
+[Alloc] Heap used percentage: 0.75 >= 0.70, triggering GC
+[GC] Starting GC. Before: 3 objects.
+[GC] After: 3 objects.
+Allocating ref 6 = 6 got cell 3
+[Alloc] Heap used percentage: 1.00 >= 0.70, triggering GC
+[GC] Starting GC. Before: 4 objects.
+[GC] After: 1 objects.
+Allocating ref 3 = 3 got cell 1
+Allocating ref 4 = 4 got cell 2
+[Alloc] Heap used percentage: 0.75 >= 0.70, triggering GC
+[GC] Starting GC. Before: 3 objects.
+[GC] After: 1 objects.
+Allocating ref 5 = 5 got cell 1
+\end{Verbatim}
+
+Decreasing \texttt{MaxHeap} to 3 causes an error:
+
+\begin{Verbatim}
+Allocating ref 0 = 0 got cell 0
+Allocating ref 1 = 1 got cell 1
+Allocating ref 2 = 2 got cell 2
+[Alloc] Heap used percentage: 1.00 >= 0.70, triggering GC
+[GC] Starting GC. Before: 3 objects.
+[GC] After: 3 objects.
+Heap overflow
+\end{Verbatim}
+
+\appendix
+\section{Appendix: Expected outputs}
+
+All test programs are evaluated with default settings. Besides, this is also the expected output for the following configurations, which is enforced by unit tests:
+
+\begin{enumerate}
+    \item \texttt{GCThreshold} set to 0 (always gc).
+    \item strict mode enabled. (except for \texttt{effect.simpl}, which relies on lazy evaluation)
+\end{enumerate}
+
+\begin{Verbatim}[numbers=left]
+doc/examples/plus.spl
+int
+3
+doc/examples/factorial.spl
+int
+24
+doc/examples/gcd1.spl
+int
+1029
+doc/examples/gcd2.spl
+int
+1029
+doc/examples/max.spl
+int
+2
+doc/examples/sum.spl
+int
+6
+doc/examples/map.spl
+((tv71 -> tv72) -> (tv71 list -> tv72 list))
+fun
+doc/examples/pcf.sum.spl
+(int -> (int -> int))
+fun
+doc/examples/pcf.even.spl
+(int -> bool)
+fun
+doc/examples/pcf.minus.spl
+int
+46
+doc/examples/pcf.factorial.spl
+int
+720
+doc/examples/pcf.fibonacci.spl
+int
+6765
+doc/examples/pcf.twice.spl
+int
+16
+doc/examples/letpoly.spl
+int
+0
+doc/examples/effect.spl
+(int * int)
+pair@0@1
+doc/examples/stream.spl
+int
+10
+\end{Verbatim}
+
+\end{document}
